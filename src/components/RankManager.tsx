@@ -3,7 +3,7 @@ import { Search, Loader2, FileInput, AlertCircle, Copy, ChevronDown, ChevronUp, 
 import { Player, RankPlayer, RankLevel, ImportStatus } from '../../types';
 import { fetchPlayer, sleep } from '../../services/api';
 import { RankPlayerCard } from './RankPlayerCard';
-import { SupportButton } from './SupportButton';
+import { SupportButton, SourceCodeButton } from './SupportButton';
 
 const RANK_CONFIG = [
   { id: 'R4' as RankLevel, name: 'Co-Leader', color: 'from-purple-600 to-purple-800' },
@@ -411,8 +411,9 @@ export const RankManager: React.FC = () => {
           Data stored locally in browser. New players default to Rank 1.
         </div>
 
-        {/* Support Button */}
-        <div className="flex justify-center">
+        {/* Action Buttons */}
+        <div className="flex justify-center gap-3">
+          <SourceCodeButton variant="inline" />
           <SupportButton variant="inline" />
         </div>
       </footer>

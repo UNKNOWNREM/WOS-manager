@@ -4,7 +4,7 @@ import { GroupManager } from './src/components/GroupManager';
 import { Player } from './types';
 import { Snowflake, Award } from 'lucide-react';
 import { ToastProvider } from './src/components/ui/Toast';
-import { SupportButton } from './src/components/SupportButton';
+import { SupportButton, SourceCodeButton } from './src/components/SupportButton';
 
 const App: React.FC = () => {
   const [foundPlayers, setFoundPlayers] = useState<Player[]>([]);
@@ -51,8 +51,9 @@ const App: React.FC = () => {
                 Data stored locally in browser. Drag and drop players to organize.
             </div>
 
-            {/* Support Button */}
-            <div className="flex justify-center">
+            {/* Action Buttons */}
+            <div className="flex justify-center gap-3">
+                <SourceCodeButton variant="inline" />
                 <SupportButton variant="inline" />
             </div>
         </footer>
