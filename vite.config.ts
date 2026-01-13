@@ -8,12 +8,23 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
-        ranks: resolve(__dirname, 'ranks.html'),
-        map: resolve(__dirname, 'map.html'),
-        admin: resolve(__dirname, 'admin.html'),
+        main: resolve(__dirname, 'src/pages/index/index.html'),
+        admin: resolve(__dirname, 'src/pages/admin/admin.html'),
+        map: resolve(__dirname, 'src/pages/map/map.html'),
+        ranks: resolve(__dirname, 'src/pages/ranks/ranks.html'),
       },
+      output: {
+        entryFileNames: '[name].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash][extname]'
+      }
     },
+    outDir: 'dist'
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src')
+    }
   },
   server: {
     allowedHosts: [
