@@ -69,13 +69,31 @@ export function FacilityCard({ building, onUpdate, onClick }: FacilityCardProps)
 
             {/* Fixed Time for Fortress/Stronghold */}
             {!isEngineeringStation && (
-                <div className="text-xs text-gray-400">
-                    <span className="block mb-1">Type: {building.type}</span>
-                    {building.fixedOpenTime && (
-                        <span className="block">
-                            Opens: {new Date(building.fixedOpenTime * 1000).toLocaleString()}
-                        </span>
-                    )}
+                <div className="mt-2 space-y-1">
+                    <div className="flex justify-between items-center text-xs text-gray-400">
+                        <span>Type: {building.type}</span>
+                        <span>Open Time:</span>
+                    </div>
+                    <input
+                        type="datetime-local"
+                        value={(() => {
+                            if (!building.fixedOpenTime) return '';
+                            const d = new Date(building.fixedOpenTime * 1000);
+                            const pad = (n: number) => n.toString().padStart(2, '0');
+                            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+                        })()}
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            if (!val) {
+                                // Maybe handle clear? For now assuming always set if using this.
+                                return;
+                            }
+                            const newTime = Math.floor(new Date(val).getTime() / 1000);
+                            onUpdate(building.id, { fixedOpenTime: newTime });
+                        }}
+                        className="w-full px-2 py-1.5 bg-slate-900 border border-slate-600 rounded text-sm text-white focus:outline-none focus:border-blue-500 font-mono"
+                        style={{ colorScheme: 'dark' }}
+                    />
                 </div>
             )}
         </div>

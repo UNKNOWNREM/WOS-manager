@@ -147,10 +147,10 @@ export default function AdminDashboard() {
             <main className="max-w-7xl mx-auto p-4 md:p-6">
 
                 {/* Navigation Tabs */}
-                <div className="flex items-center gap-4 border-b border-slate-700 mb-6">
+                <div className="flex items-center gap-4 border-b border-slate-700 mb-6 overflow-x-auto">
                     <button
                         onClick={() => setActiveTab('rewards')}
-                        className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${activeTab === 'rewards'
+                        className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors whitespace-nowrap ${activeTab === 'rewards'
                             ? 'border-indigo-500 text-indigo-400'
                             : 'border-transparent text-slate-400 hover:text-slate-200'
                             }`}
@@ -160,7 +160,7 @@ export default function AdminDashboard() {
                     </button>
                     <button
                         onClick={() => setActiveTab('facility')}
-                        className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${activeTab === 'facility'
+                        className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors whitespace-nowrap ${activeTab === 'facility'
                             ? 'border-indigo-500 text-indigo-400'
                             : 'border-transparent text-slate-400 hover:text-slate-200'
                             }`}
@@ -170,7 +170,7 @@ export default function AdminDashboard() {
                     </button>
                     <button
                         onClick={() => setActiveTab('alliance')}
-                        className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${activeTab === 'alliance'
+                        className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors whitespace-nowrap ${activeTab === 'alliance'
                             ? 'border-indigo-500 text-indigo-400'
                             : 'border-transparent text-slate-400 hover:text-slate-200'
                             }`}
