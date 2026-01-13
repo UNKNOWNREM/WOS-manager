@@ -9,7 +9,7 @@ import { GroupTable } from './GroupManager/GroupTable';
 
 export const GroupManager: React.FC = () => {
   const { addToast } = useToast();
-  
+
   // Data State
   const [groups, setGroups] = useState<PlayerGroup[]>([]);
   const [activeGroupId, setActiveGroupId] = useState<string>('');
@@ -24,7 +24,7 @@ export const GroupManager: React.FC = () => {
     confirmLabel?: string;
     isDestructive?: boolean;
   } | null>(null);
-  
+
   // Temporary input state for modal
   const [tempInput, setTempInput] = useState('');
 
@@ -35,14 +35,14 @@ export const GroupManager: React.FC = () => {
       setGroups(saved);
       setActiveGroupId(saved[0].id);
     } else {
-        const defaultGroup: PlayerGroup = {
-            id: 'default',
-            name: 'Main List',
-            columns: [{ id: 'col_note', name: 'Note', type: 'text' }],
-            players: []
-        };
-        setGroups([defaultGroup]);
-        setActiveGroupId('default');
+      const defaultGroup: PlayerGroup = {
+        id: 'default',
+        name: 'Main List',
+        columns: [{ id: 'col_note', name: 'Note', type: 'text' }],
+        players: []
+      };
+      setGroups([defaultGroup]);
+      setActiveGroupId('default');
     }
   }, []);
 
@@ -88,7 +88,7 @@ export const GroupManager: React.FC = () => {
         const newGroups = groups.filter(g => g.id !== targetId);
         setGroups(newGroups);
         if (activeGroupId === targetId && newGroups.length > 0) {
-            setActiveGroupId(newGroups[0].id);
+          setActiveGroupId(newGroups[0].id);
         }
         addToast('Group deleted', 'success');
         break;
@@ -207,8 +207,8 @@ export const GroupManager: React.FC = () => {
   const handleDragOver = (e: React.DragEvent) => {
     // Check if dragging a file or reordering internal items
     if (e.dataTransfer.types.includes('text/type')) {
-       // Internal drag (ignore here, handled in subcomponents)
-       return;
+      // Internal drag (ignore here, handled in subcomponents)
+      return;
     }
     e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
@@ -322,57 +322,57 @@ export const GroupManager: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col font-sans">
-      <GroupTabs 
+    <div className="lg:h-full flex flex-col font-sans">
+      <GroupTabs
         groups={groups}
         activeGroupId={activeGroupId}
         onSwitchGroup={setActiveGroupId}
         onAddGroup={() => openModal({ type: 'ADD_GROUP', title: 'Create New Group', confirmLabel: 'Create' })}
         onRenameGroup={(id, name) => openModal({ type: 'RENAME_GROUP', title: 'Rename Group', inputValue: name, targetId: id, confirmLabel: 'Save' })}
         onDeleteGroup={(id) => {
-            if (groups.length <= 1) return addToast('Cannot delete last group', 'error');
-            openModal({ type: 'DELETE_GROUP', title: 'Delete Group?', targetId: id, confirmLabel: 'Delete', isDestructive: true });
+          if (groups.length <= 1) return addToast('Cannot delete last group', 'error');
+          openModal({ type: 'DELETE_GROUP', title: 'Delete Group?', targetId: id, confirmLabel: 'Delete', isDestructive: true });
         }}
         onReorderGroups={reorderGroups}
       />
 
       {/* Main Content Area */}
-      <div 
-        className="flex-1 glass-panel rounded-xl overflow-hidden flex flex-col relative shadow-2xl transition-all"
+      <div
+        className="flex-1 glass-panel rounded-xl lg:overflow-hidden flex flex-col relative shadow-2xl transition-all"
         onDragOver={handleDragOver}
         onDrop={handleDrop}
       >
         {!activeGroup ? (
-           <div className="flex-1 flex items-center justify-center text-white/30 flex-col gap-4">
-             <div className="p-6 rounded-full bg-white/5 border border-white/5">
-                <GripVertical size={48} className="opacity-50" />
-             </div>
-             <p className="text-lg">Select or create a group to start managing players</p>
-           </div>
+          <div className="flex-1 flex items-center justify-center text-white/30 flex-col gap-4">
+            <div className="p-6 rounded-full bg-white/5 border border-white/5">
+              <GripVertical size={48} className="opacity-50" />
+            </div>
+            <p className="text-lg">Select or create a group to start managing players</p>
+          </div>
         ) : (
           <>
             {/* Toolbar */}
             <div className="px-4 py-3 border-b border-white/10 flex flex-wrap gap-4 justify-between items-center bg-black/20">
               <div className="flex items-center gap-2">
-                 <div className="text-sm text-gray-400 mr-2 flex flex-col leading-tight">
-                    <span className="text-white font-bold text-lg">{activeGroup.name}</span>
-                    <span className="text-xs">{activeGroup.players.length} members</span>
-                 </div>
-                 <div className="h-8 w-px bg-white/10 mx-2"></div>
-                 <button
-                    onClick={() => {
-                        if (groups.length <= 1) return addToast('Cannot delete last group', 'error');
-                        openModal({ type: 'DELETE_GROUP', title: 'Delete Group?', targetId: activeGroup.id, confirmLabel: 'Delete', isDestructive: true });
-                    }}
-                    className="px-3 py-1.5 rounded-md bg-white/5 hover:bg-coral-500/20 text-xs text-white hover:text-coral-400 flex items-center gap-1.5 border border-white/10 transition-colors"
-                 >
-                   <Trash2 size={14} /> Delete Group
-                 </button>
+                <div className="text-sm text-gray-400 mr-2 flex flex-col leading-tight">
+                  <span className="text-white font-bold text-lg">{activeGroup.name}</span>
+                  <span className="text-xs">{activeGroup.players.length} members</span>
+                </div>
+                <div className="h-8 w-px bg-white/10 mx-2"></div>
+                <button
+                  onClick={() => {
+                    if (groups.length <= 1) return addToast('Cannot delete last group', 'error');
+                    openModal({ type: 'DELETE_GROUP', title: 'Delete Group?', targetId: activeGroup.id, confirmLabel: 'Delete', isDestructive: true });
+                  }}
+                  className="px-3 py-1.5 rounded-md bg-white/5 hover:bg-coral-500/20 text-xs text-white hover:text-coral-400 flex items-center gap-1.5 border border-white/10 transition-colors"
+                >
+                  <Trash2 size={14} /> Delete Group
+                </button>
               </div>
 
               <div className="flex gap-2">
-                <button 
-                  onClick={() => openModal({ type: 'ADD_COL', title: 'New Column Name', confirmLabel: 'Add Column' })} 
+                <button
+                  onClick={() => openModal({ type: 'ADD_COL', title: 'New Column Name', confirmLabel: 'Add Column' })}
                   className="px-4 py-2 rounded-lg bg-teal-800/40 hover:bg-teal-700/50 text-xs text-teal-100 flex items-center gap-2 border border-teal-500/30 transition-colors"
                 >
                   <Plus size={14} /> Add Column
@@ -384,7 +384,7 @@ export const GroupManager: React.FC = () => {
             </div>
 
             {/* Render Table Component */}
-            <GroupTable 
+            <GroupTable
               group={activeGroup}
               onRenameColumn={(id, name) => openModal({ type: 'RENAME_COL', title: 'Rename Column', inputValue: name, targetId: id, confirmLabel: 'Save' })}
               onDeleteColumn={(id) => openModal({ type: 'DELETE_COL', title: 'Remove Column?', targetId: id, confirmLabel: 'Remove', isDestructive: true })}
@@ -406,21 +406,21 @@ export const GroupManager: React.FC = () => {
         isDestructive={modalConfig?.isDestructive}
       >
         {modalConfig?.type !== 'DELETE_GROUP' && modalConfig?.type !== 'DELETE_COL' ? (
-           <div className="space-y-4">
-             <input
-               autoFocus
-               type="text"
-               value={tempInput}
-               onChange={(e) => setTempInput(e.target.value)}
-               onKeyDown={(e) => e.key === 'Enter' && handleModalSubmit()}
-               placeholder="Enter name..."
-               className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-teal-500 transition-colors"
-             />
-           </div>
+          <div className="space-y-4">
+            <input
+              autoFocus
+              type="text"
+              value={tempInput}
+              onChange={(e) => setTempInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleModalSubmit()}
+              placeholder="Enter name..."
+              className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-teal-500 transition-colors"
+            />
+          </div>
         ) : (
-           <p className="text-gray-300">
-             Are you sure you want to proceed? This action cannot be undone.
-           </p>
+          <p className="text-gray-300">
+            Are you sure you want to proceed? This action cannot be undone.
+          </p>
         )}
       </Modal>
     </div>

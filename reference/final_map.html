@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>完整地圖 - Whiteout Survival</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+        }
+
+        .sidebar {
+            width: 200px;
+            background: rgba(20, 20, 30, 0.95);
+            border-right: 2px solid rgba(0, 212, 255, 0.3);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        h1 {
+            color: #00d4ff;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .legend {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9em;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+
+        .legend-color.fortress {
+            background: #ff4444;
+        }
+
+        .legend-color.stronghold {
+            background: #a855f7;
+            border-radius: 4px;
+        }
+
+        .legend-color.station {
+            background: #888;
+            width: 10px;
+            height: 10px;
+        }
+
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #00d4ff 0%, #0096ff 100%);
+            color: #000;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        .map-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #000;
+        }
+
+        canvas {
+            cursor: grab;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        .stats {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>🗺️ 完整地圖</h1>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color fortress"></div><span>堡壘 (12)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color stronghold"></div><span>Stronghold (5)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color station"></div><span>工程站 (74)</span>
+                </div>
+            </div>
+            <div class="controls">
+                <label><input type="checkbox" id="showFortresses" checked>顯示堡壘</label>
+                <label><input type="checkbox" id="showStrongholds" checked>顯示 Stronghold</label>
+                <label><input type="checkbox" id="showStations" checked>顯示工程站</label>
+                <label><input type="checkbox" id="showGrid">顯示網格</label>
+                <button onclick="resetView()">重置視圖</button>
+            </div>
+            <div class="stats">
+                地圖: 1200×1200<br>
+                中心: (597, 597)<br>
+                左下(0,0)
+            </div>
+        </div>
+        <div class="map-area"><canvas id="mapCanvas"></canvas></div>
+    </div>
+    <script>
+        const fortresses = [[239, 350, 1], [239, 608, 2], [239, 830, 3], [368, 239, 4], [368, 959, 5], [590, 239, 6], [608, 959, 7], [848, 239, 8], [848, 959, 9], [959, 350, 10], [959, 608, 11], [959, 830, 12]];
+        const strongholds = [[402, 599, 1], [599, 402, 2], [599, 599, 3], [599, 802, 4], [802, 599, 5]];
+        const stations = [[88, 667], [139, 139], [139, 238], [139, 328], [139, 439], [139, 538], [139, 667], [139, 748], [139, 868], [139, 958], [139, 1039], [238, 139], [238, 238], [238, 487], [238, 769], [238, 958], [268, 538], [268, 1069], [328, 328], [328, 568], [328, 667], [328, 868], [328, 1039], [367, 139], [388, 487], [388, 718], [439, 268], [439, 1069], [487, 139], [487, 328], [487, 868], [487, 958], [538, 88], [538, 139], [538, 937], [538, 1039], [589, 328], [589, 868], [637, 1138], [667, 139], [667, 268], [667, 1069], [739, 958], [769, 139], [769, 238], [769, 328], [769, 868], [769, 1039], [817, 487], [817, 718], [868, 139], [868, 328], [868, 568], [868, 667], [868, 868], [868, 1069], [937, 538], [958, 139], [958, 238], [958, 439], [958, 748], [958, 958], [958, 1069], [1069, 139], [1069, 238], [1069, 328], [1069, 487], [1069, 568], [1069, 667], [1069, 748], [1069, 868], [1069, 937], [1069, 1069], [1138, 568]];
+        let canvas, ctx, scale = 0.55, offsetX = 0, offsetY = 0, isDragging = false, lastX, lastY;
+
+        function gameToCanvas(x, y) { return { x: x, y: 1199 - y }; }
+
+        function initMap() {
+            canvas = document.getElementById('mapCanvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth - 200;
+            canvas.height = window.innerHeight;
+            offsetX = (canvas.width - 1200 * scale) / 2;
+            offsetY = (canvas.height - 1200 * scale) / 2;
+            setupEvents();
+            drawMap();
+        }
+
+        function setupEvents() {
+            canvas.addEventListener('mousedown', e => { isDragging = true; lastX = e.clientX; lastY = e.clientY; });
+            canvas.addEventListener('mousemove', e => {
+                if (isDragging) {
+                    offsetX += e.clientX - lastX; offsetY += e.clientY - lastY;
+                    lastX = e.clientX; lastY = e.clientY; drawMap();
+                }
+            });
+            canvas.addEventListener('mouseup', () => isDragging = false);
+            canvas.addEventListener('mouseleave', () => isDragging = false);
+            canvas.addEventListener('wheel', e => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                const newScale = Math.max(0.2, Math.min(2, scale * delta));
+                const mouseX = e.clientX - canvas.getBoundingClientRect().left;
+                const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+                offsetX = mouseX - (mouseX - offsetX) * (newScale / scale);
+                offsetY = mouseY - (mouseY - offsetY) * (newScale / scale);
+                scale = newScale; drawMap();
+            });
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.addEventListener('change', drawMap));
+            window.addEventListener('resize', () => { canvas.width = window.innerWidth - 200; canvas.height = window.innerHeight; drawMap(); });
+        }
+
+        function drawMap() {
+            ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            const showGrid = document.getElementById('showGrid').checked;
+            const showFortresses = document.getElementById('showFortresses').checked;
+            const showStrongholds = document.getElementById('showStrongholds').checked;
+            const showStations = document.getElementById('showStations').checked;
+
+            ctx.save();
+            ctx.translate(offsetX, offsetY);
+            ctx.scale(scale, scale);
+
+            ctx.fillStyle = '#1a1a1a'; ctx.fillRect(0, 0, 1200, 1200);
+
+            if (showGrid) {
+                ctx.strokeStyle = 'rgba(100,100,100,0.3)'; ctx.lineWidth = 1 / scale;
+                for (let i = 0; i <= 1200; i += 100) {
+                    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 1200); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(1200, i); ctx.stroke();
+                }
+            }
+
+            if (showStations) {
+                ctx.fillStyle = 'rgba(136,136,136,0.8)';
+                stations.forEach(([x, y]) => {
+                    const pos = gameToCanvas(x, y);
+                    ctx.fillRect(pos.x - 2, pos.y - 2, 4, 4);
+                });
+            }
+
+            if (showFortresses) {
+                fortresses.forEach(([x, y, id]) => {
+                    const pos = gameToCanvas(x, y);
+                    const g = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 15);
+                    g.addColorStop(0, 'rgba(255,68,68,0.6)'); g.addColorStop(1, 'rgba(255,68,68,0)');
+                    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(pos.x, pos.y, 15, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = '#ff4444'; ctx.strokeStyle = '#ffff00'; ctx.lineWidth = 2 / scale;
+                    ctx.beginPath(); ctx.arc(pos.x, pos.y, 8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = '#fff'; ctx.font = `bold ${12 / scale}px Arial`; ctx.textAlign = 'center';
+                    ctx.fillText(`F${id}`, pos.x, pos.y - 12);
+                });
+            }
+
+            if (showStrongholds) {
+                strongholds.forEach(([x, y, id]) => {
+                    const pos = gameToCanvas(x, y);
+                    const g = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 18);
+                    g.addColorStop(0, 'rgba(168,85,247,0.6)'); g.addColorStop(1, 'rgba(168,85,247,0)');
+                    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = '#a855f7'; ctx.strokeStyle = '#ffff00'; ctx.lineWidth = 2 / scale;
+                    const size = 10;
+                    ctx.fillRect(pos.x - size / 2, pos.y - size / 2, size, size);
+                    ctx.strokeRect(pos.x - size / 2, pos.y - size / 2, size, size);
+                    ctx.fillStyle = '#fff'; ctx.font = `bold ${12 / scale}px Arial`; ctx.textAlign = 'center';
+                    ctx.fillText(`S${id}`, pos.x, pos.y - 15);
+                });
+            }
+
+            const center = gameToCanvas(599, 599);
+            ctx.fillStyle = '#0066ff'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2 / scale;
+            ctx.beginPath(); ctx.arc(center.x, center.y, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function resetView() {
+            scale = 0.55;
+            offsetX = (canvas.width - 1200 * scale) / 2;
+            offsetY = (canvas.height - 1200 * scale) / 2;
+            drawMap();
+        }
+
+        window.addEventListener('load', initMap);
+    </script>
+</body>
+
+</html>

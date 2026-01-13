@@ -99,10 +99,10 @@ export const ImportPanel: React.FC<ImportPanelProps> = ({ foundPlayers, setFound
     }
 
     setFoundPlayers(prev => {
-        // Merge and remove duplicates based on fid
-        const existingIds = new Set(prev.map(p => p.fid));
-        const uniqueNew = newPlayers.filter(p => !existingIds.has(p.fid));
-        return [...uniqueNew, ...prev];
+      // Merge and remove duplicates based on fid
+      const existingIds = new Set(prev.map(p => p.fid));
+      const uniqueNew = newPlayers.filter(p => !existingIds.has(p.fid));
+      return [...uniqueNew, ...prev];
     });
 
     setStatus(prev => ({ ...prev, isImporting: false }));
@@ -129,26 +129,24 @@ export const ImportPanel: React.FC<ImportPanelProps> = ({ foundPlayers, setFound
     if (!searchQuery.trim()) return true;
     const query = searchQuery.toLowerCase();
     return player.nickname?.toLowerCase().includes(query) ||
-           String(player.fid).toLowerCase().includes(query);
+      String(player.fid).toLowerCase().includes(query);
   });
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="lg:h-full flex flex-col">
       <div className="glass-panel rounded-t-xl p-3 lg:p-4 border-b-0 shrink-0">
         <div className="flex gap-2 mb-4 bg-black/20 p-1 rounded-lg">
           <button
             onClick={() => setMode('single')}
-            className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${
-              mode === 'single' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'
-            }`}
+            className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${mode === 'single' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'
+              }`}
           >
             Single Search
           </button>
           <button
             onClick={() => setMode('batch')}
-            className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${
-              mode === 'batch' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'
-            }`}
+            className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${mode === 'batch' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'
+              }`}
           >
             Batch Import
           </button>
@@ -181,67 +179,67 @@ export const ImportPanel: React.FC<ImportPanelProps> = ({ foundPlayers, setFound
               className="w-full h-16 lg:h-24 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 text-xs font-mono resize-none"
             />
             <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400">
-                    {batchText ? batchText.split(/[\n,]/).filter(s => s.trim()).length : 0} IDs detected
-                </span>
-                <button
+              <span className="text-xs text-gray-400">
+                {batchText ? batchText.split(/[\n,]/).filter(s => s.trim()).length : 0} IDs detected
+              </span>
+              <button
                 onClick={handleBatchImport}
                 disabled={status.isImporting || !batchText}
                 className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
-                >
+              >
                 {status.isImporting ? <Loader2 className="animate-spin size-4" /> : <FileInput size={16} />}
                 Start Import
-                </button>
+              </button>
             </div>
           </div>
         )}
 
         {/* Status Area */}
         {status.isImporting || status.total > 0 ? (
-           <div className="mt-3 lg:mt-4 p-2 lg:p-3 bg-black/20 rounded-lg text-xs">
-              <div className="flex-between mb-2 text-gray-300 flex justify-between">
-                 <span>Progress: {status.current}/{status.total}</span>
-                 <div className="flex items-center gap-2">
-                   {status.isImporting && <Loader2 className="animate-spin size-3" />}
-                   {!status.isImporting && (
-                     <button
-                       onClick={() => setStatus({ total: 0, current: 0, success: 0, failed: 0, failedIds: [], isImporting: false })}
-                       className="text-white/40 hover:text-white transition-colors"
-                       title="Close"
-                     >
-                       <X size={14} />
-                     </button>
-                   )}
-                 </div>
+          <div className="mt-3 lg:mt-4 p-2 lg:p-3 bg-black/20 rounded-lg text-xs">
+            <div className="flex-between mb-2 text-gray-300 flex justify-between">
+              <span>Progress: {status.current}/{status.total}</span>
+              <div className="flex items-center gap-2">
+                {status.isImporting && <Loader2 className="animate-spin size-3" />}
+                {!status.isImporting && (
+                  <button
+                    onClick={() => setStatus({ total: 0, current: 0, success: 0, failed: 0, failedIds: [], isImporting: false })}
+                    className="text-white/40 hover:text-white transition-colors"
+                    title="Close"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
               </div>
-              <div className="w-full bg-gray-700 h-1.5 rounded-full overflow-hidden">
-                 <div
-                    className="bg-blue-500 h-full transition-all duration-300"
-                    style={{ width: `${(status.current / (status.total || 1)) * 100}%` }}
-                 />
-              </div>
+            </div>
+            <div className="w-full bg-gray-700 h-1.5 rounded-full overflow-hidden">
+              <div
+                className="bg-blue-500 h-full transition-all duration-300"
+                style={{ width: `${(status.current / (status.total || 1)) * 100}%` }}
+              />
+            </div>
 
-              {!status.isImporting && status.failed > 0 && (
-                  <div className="mt-2 flex items-start gap-2 text-red-300">
-                      <AlertCircle size={14} className="mt-0.5" />
-                      <div className="flex-1">
-                          <p>Failed: {status.failed}</p>
-                          <div className="flex gap-2 mt-1">
-                              <button
-                                onClick={() => navigator.clipboard.writeText(status.failedIds.join('\n'))}
-                                className="underline hover:text-white flex items-center gap-1"
-                              >
-                                  <Copy size={10} /> Copy Failed IDs
-                              </button>
-                          </div>
-                      </div>
+            {!status.isImporting && status.failed > 0 && (
+              <div className="mt-2 flex items-start gap-2 text-red-300">
+                <AlertCircle size={14} className="mt-0.5" />
+                <div className="flex-1">
+                  <p>Failed: {status.failed}</p>
+                  <div className="flex gap-2 mt-1">
+                    <button
+                      onClick={() => navigator.clipboard.writeText(status.failedIds.join('\n'))}
+                      className="underline hover:text-white flex items-center gap-1"
+                    >
+                      <Copy size={10} /> Copy Failed IDs
+                    </button>
                   </div>
-              )}
-           </div>
+                </div>
+              </div>
+            )}
+          </div>
         ) : null}
       </div>
 
-      <div className="flex-1 overflow-hidden flex flex-col glass-panel border-t-0 rounded-b-xl mt-2 lg:mt-4 min-h-0">
+      <div className="flex-1 lg:overflow-hidden flex flex-col glass-panel border-t-0 rounded-b-xl mt-2 lg:mt-4 min-h-0">
         <div className="p-2 lg:p-3 border-b border-white/10 shrink-0">
           <div className="flex justify-between items-center">
             <h3 className="font-semibold text-white/80 text-sm lg:text-base">Found Players ({foundPlayers.length})</h3>
@@ -274,25 +272,25 @@ export const ImportPanel: React.FC<ImportPanelProps> = ({ foundPlayers, setFound
           )}
         </div>
         <div
-          className="flex-1 overflow-y-auto p-2 lg:p-3 space-y-2 custom-scrollbar"
+          className="flex-1 overflow-y-auto max-h-[400px] p-2 lg:p-3 space-y-2 custom-scrollbar"
           style={{
             scrollbarWidth: 'thin',
             scrollbarColor: 'rgba(20, 184, 166, 0.5) rgba(0, 0, 0, 0.2)'
           }}
         >
-           {foundPlayers.length === 0 && (
-               <div className="text-center text-white/30 py-8 text-sm">
-                   No players loaded. Search or import to begin.
-               </div>
-           )}
-           {foundPlayers.length > 0 && filteredPlayers.length === 0 && (
-               <div className="text-center text-white/30 py-8 text-sm">
-                   找不到符合的玩家
-               </div>
-           )}
-           {filteredPlayers.map(player => (
-             <PlayerCard key={player.fid} player={player} onRemove={handleRemovePlayer} />
-           ))}
+          {foundPlayers.length === 0 && (
+            <div className="text-center text-white/30 py-8 text-sm">
+              No players loaded. Search or import to begin.
+            </div>
+          )}
+          {foundPlayers.length > 0 && filteredPlayers.length === 0 && (
+            <div className="text-center text-white/30 py-8 text-sm">
+              找不到符合的玩家
+            </div>
+          )}
+          {filteredPlayers.map(player => (
+            <PlayerCard key={player.fid} player={player} onRemove={handleRemovePlayer} />
+          ))}
         </div>
       </div>
     </div>

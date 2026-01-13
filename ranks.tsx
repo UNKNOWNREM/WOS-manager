@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { RankManager } from './src/components/RankManager';
+import './src/index.css';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
