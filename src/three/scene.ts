@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Building, BUILDING_COLORS } from '../types/Building';
+import { calculateFacilityStatus, formatCountdown } from '../utils/timeCalculations';
 
 // Constants from reference project (wos-interactive-map-lite)
 const GRID_SIZE = 1200;
@@ -32,6 +33,16 @@ export interface SceneManager {
 // Global references for building management
 const buildingMap = new Map<THREE.Object3D, string>();
 const buildingMeshes = new Map<string, THREE.Group>();
+// Timer sprites cache for updates
+interface TimerSpriteRef {
+    sprite: THREE.Sprite;
+    building: Building;
+    canvas: HTMLCanvasElement;
+    ctx: CanvasRenderingContext2D;
+    texture: THREE.CanvasTexture;
+}
+const timerSprites: TimerSpriteRef[] = [];
+
 // let gridHelper: THREE.GridHelper; // DISABLED - Grid removed for cleaner view
 let plane: THREE.Mesh;
 let planeSelected: THREE.Mesh;
@@ -79,12 +90,6 @@ export function initScene(container: HTMLElement, onBuildingSelect?: (id: string
 
     // Initialize plane (map background)
     initPlane(scene);
-
-
-    // Initialize grid - DISABLED (removed for cleaner view)
-    // gridHelper = new THREE.GridHelper(GRID_SIZE, 1, 0x000000, 0x888888);
-    // gridHelper.rotation.x = Math.PI / 2;
-    // scene.add(gridHelper);
 
     // Selection plane
     const geometrySelected = new THREE.PlaneGeometry(1, 1);
@@ -227,6 +232,7 @@ export function initScene(container: HTMLElement, onBuildingSelect?: (id: string
 
     // Animation loop - EXACT match with reference
     let animationId: number;
+    let lastTimeUpdate = 0;
 
     function animate() {
         animationId = requestAnimationFrame(animate);
@@ -238,15 +244,66 @@ export function initScene(container: HTMLElement, onBuildingSelect?: (id: string
         // Update coordinate visibility based on zoom (FOV)
         // Show coordinates when FOV < 30 (zoomed in)
         const showCoordinates = camera.fov < 30;
+
         buildingMeshes.forEach((group) => {
             group.children.forEach((child) => {
                 if (child.userData.isCoordinate) {
                     child.visible = showCoordinates;
                 }
+                // Also toggle timer visibility if we want to hide them when zoomed out too far?
+                // For now, keep them visible or match coordinate logic
+                if (child.userData.isTimer) {
+                    child.visible = showCoordinates; // Hide timers when zoomed out for performance/clutter
+                }
             });
         });
+
+        // Update timers every second
+        const now = Date.now();
+        if (now - lastTimeUpdate > 1000) {
+            updateTimers();
+            lastTimeUpdate = now;
+        }
     }
     animate();
+
+    // Update all timer sprites (canvas redraw)
+    function updateTimers() {
+        if (timerSprites.length === 0) return;
+
+        timerSprites.forEach(ref => {
+            const { building, ctx, texture } = ref;
+            const status = calculateFacilityStatus(building.protectionEndTime);
+
+            // Clear canvas
+            ctx.clearRect(0, 0, 512, 128);
+
+            // Determine text to show
+            let text = '';
+            let color = '#ffffff';
+
+            if (status.status === 'protected') {
+                text = formatCountdown(status.remainingSeconds);
+                color = '#60a5fa'; // Blue-400
+            } else {
+                text = 'CONTESTED';
+                color = '#ef4444'; // Red-500
+            }
+
+            // Draw text
+            ctx.font = 'bold 80px Inter'; // Big font for downscaling
+            ctx.fillStyle = color;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            // Add text shadow/outline for readability
+            ctx.strokeStyle = 'rgba(0,0,0,0.8)';
+            ctx.lineWidth = 8;
+            ctx.strokeText(text, 256, 64);
+            ctx.fillText(text, 256, 64);
+
+            texture.needsUpdate = true;
+        });
+    }
 
     // Handle resize
     function handleResize() {
@@ -274,6 +331,7 @@ export function initScene(container: HTMLElement, onBuildingSelect?: (id: string
         }
         buildingMap.clear();
         buildingMeshes.clear();
+        timerSprites.length = 0; // Clear timer cache
         // Dispose textures
         Object.values(markerTextures).forEach(t => t.dispose());
     }
@@ -296,22 +354,19 @@ export function initScene(container: HTMLElement, onBuildingSelect?: (id: string
         });
         buildingMap.clear();
         buildingMeshes.clear();
+        timerSprites.length = 0; // Clear timers
 
         // Add buildings
         buildings.forEach(building => {
-            // Check if we have a texture for this building type
-            // If texture is not loaded yet (async), we might need to handle it. 
-            // For simplicity, we create wrapper that updates when texture loads if possible, 
-            // or we just rely on the fact that textures load quickly or on next render cycle.
-            // Since `renderBuildings` is called on data change, we need to ensure textures are available 
-            // or update the material later.
-            // Better approach: pass the texture or null.
             const texture = markerTextures[building.type];
             const group = createBuildingMesh(building, texture);
             scene.add(group);
             buildingMap.set(group, building.id);
             buildingMeshes.set(building.id, group);
         });
+
+        // Initial timer update
+        updateTimers();
     }
 
     // Focus on building
@@ -466,14 +521,31 @@ function createBuildingMesh(building: Building, texture?: THREE.Texture): THREE.
     // Get colors
     const colorHex = BUILDING_COLORS[building.type] || '#3b82f6';
     const color = new THREE.Color(colorHex);
-    const allianceColor = ALLIANCE_COLORS[building.alliance] || 0x6b7280;
+
+    // Alliance Configuration Loading
+    let allianceColor = ALLIANCE_COLORS[building.alliance] || 0x6b7280;
+    let allianceAbbr = building.allianceName || building.alliance.slice(-1).toUpperCase();
+
+    try {
+        const allianceConfigStr = localStorage.getItem('alliance_config');
+        if (allianceConfigStr) {
+            const allianceConfig = JSON.parse(allianceConfigStr);
+            if (allianceConfig && building.alliance !== 'unassigned') {
+                const config = allianceConfig[building.alliance];
+                if (config) {
+                    allianceColor = parseInt(config.color.replace('#', '0x'));
+                    allianceAbbr = config.abbr || allianceAbbr;
+                }
+            }
+        }
+    } catch (e) {
+        // Fallback to defaults
+    }
 
     // Create base mesh for interaction (and fallback visual)
     const geometry = new THREE.PlaneGeometry(size.w, size.h);
 
     // Force transparency for types that should have images
-    // This ensures we never see the "colored dot" underneath the image
-    // Sun City remains visible as it has no image
     const isTransparent = building.type !== 'sun_city';
 
     const material = new THREE.MeshBasicMaterial({
@@ -499,34 +571,74 @@ function createBuildingMesh(building: Building, texture?: THREE.Texture): THREE.
         const sprite = new THREE.Sprite(spriteMaterial);
         sprite.scale.set(size.w, size.h, 1);
         sprite.renderOrder = 999;
-
-        // Offset sprite slightly to prevent z-fighting if mesh was visible, 
-        // though here mesh is transparent so it doesn't matter much.
-        // Also sprite always faces camera.
         group.add(sprite);
     }
 
     // Add text sprite for alliance
-    if (building.alliance !== 'unassigned' && building.allianceName) {
-        const sprite = createTextSprite(building.allianceName, allianceColor);
-        sprite.position.set(0, -size.h * 0.6, 2);
+    if (building.alliance !== 'unassigned') {
+        // Use bolder and larger font for alliance name
+        const sprite = createTextSprite(allianceAbbr, allianceColor, "bold 150px Inter");
+
+        // Use negative Z to position "below" in 3D projection
+        // Custom offsets based on building type
+        let labelOffset = 1.2; // Default for engineering_station
+
+        if (building.type === 'fortress') {
+            labelOffset = 1; // Closer for fortresses (larger base)
+        } else if (building.type === 'stronghold') {
+            labelOffset = 0.9;
+        } else if (building.type === 'sun_city') {
+            labelOffset = 0.8;
+        }
+
+        sprite.position.set(0, 0, -size.h * labelOffset);
         group.add(sprite);
     }
 
-    // Add coordinate sprite (initially hidden, controlled by zoom level)
-    // Add coordinate sprite (initially hidden, controlled by zoom level)
+    // Add coordinate sprite (initially hidden)
     const coordText = `(${building.coordinates.x}, ${building.coordinates.y})`;
-    const coordSprite = createTextSprite(coordText, 0xffffff, "bold 90px Inter"); // White bold text
-    // Adjust position to be "above" the building in 3D space (Z-axis), not just map North (Y-axis)
-    // Adding a slight Y offset to visually clear the building if needed, but primarily Z for height
+    const coordSprite = createTextSprite(coordText, 0xffffff, "bold 90px Inter");
     coordSprite.position.set(0, 0, size.h * 0.8);
-    coordSprite.scale.set(12, 6, 1); // Increased scale for better visibility
-    coordSprite.visible = false; // Hidden by default
+    coordSprite.scale.set(12, 6, 1);
+    coordSprite.visible = false;
     coordSprite.userData = { isCoordinate: true };
     group.add(coordSprite);
 
+    // Create TIMER SPRITE for Engineering Stations
+    if (building.type === 'engineering_station') {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 128;
+        const ctx = canvas.getContext('2d')!;
+
+        const texture = new THREE.CanvasTexture(canvas);
+        const mat = new THREE.SpriteMaterial({
+            map: texture,
+            transparent: true,
+            depthTest: false
+        });
+        const timerSprite = new THREE.Sprite(mat);
+
+        // Position below alliance name using negative Z
+        // Alliance name is at -1.5, so we put timer at -2.5 to be safe
+        timerSprite.position.set(0, 0, -size.h * 1.7);
+        timerSprite.scale.set(12, 3, 1);
+        timerSprite.renderOrder = 1000; // On top
+        timerSprite.userData = { isTimer: true };
+
+        group.add(timerSprite);
+
+        // Register for updates
+        timerSprites.push({
+            sprite: timerSprite,
+            building,
+            canvas,
+            ctx,
+            texture
+        });
+    }
+
     // Position in world coordinates
-    // Y-axis flip to match HTML canvas: y = 1199 - gameY, then center: (1199 - y) - 600 = 599 - y
     const x = building.coordinates.x - 600;
     const y = building.coordinates.y - 600;
     group.position.set(x, y, 0);

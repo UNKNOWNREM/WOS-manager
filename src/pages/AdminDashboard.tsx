@@ -11,7 +11,9 @@ import {
     Image as ImageIcon,
     FileDown,
     FileUp,
-    Upload
+    Upload,
+    Clock,
+    Users
 } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { INITIAL_REWARDS, RewardConfig, RewardCycle, REWARD_CYCLES, getReward } from '../data/rewards';
@@ -20,11 +22,15 @@ import { BuildingReward, BuildingType } from '../types/Building';
 import { REWARD_ICONS } from '../data/assets';
 import { LanguageSwitcher } from '../components/common/LanguageSwitcher';
 import { Header } from '../components/common/Header';
+import { FacilityControl } from '../components/admin/FacilityControl';
+import { AllianceManagement } from '../components/admin/AllianceManagement';
+import { Building } from '../types/Building';
 
 export default function AdminDashboard() {
-    const [activeTab, setActiveTab] = useState<'rewards' | 'schedule'>('rewards');
+    const [activeTab, setActiveTab] = useState<'rewards' | 'facility' | 'alliance'>('rewards');
     const [currentCycle, setCurrentCycle] = useLocalStorage<RewardCycle>('currentCycle', 1);
     const [rewards, setRewards] = useLocalStorage<RewardConfig>('rewards_config_v2', INITIAL_REWARDS);
+    const [buildings, setBuildings] = useLocalStorage<Building[]>('buildings_v4', []);
 
     // Notifications state
     const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
@@ -93,6 +99,12 @@ export default function AdminDashboard() {
         setRewards(newRewards);
     };
 
+    const handleUpdateBuilding = (buildingId: string, updates: Partial<Building>) => {
+        setBuildings(prev => prev.map(b =>
+            b.id === buildingId ? { ...b, ...updates } : b
+        ));
+    };
+
     return (
         <div className="min-h-screen bg-slate-900 text-slate-100 font-sans">
             {/* Header */}
@@ -145,6 +157,26 @@ export default function AdminDashboard() {
                     >
                         <LayoutDashboard size={18} />
                         Reward Management
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('facility')}
+                        className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${activeTab === 'facility'
+                            ? 'border-indigo-500 text-indigo-400'
+                            : 'border-transparent text-slate-400 hover:text-slate-200'
+                            }`}
+                    >
+                        <Clock size={18} />
+                        Facility Control
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('alliance')}
+                        className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${activeTab === 'alliance'
+                            ? 'border-indigo-500 text-indigo-400'
+                            : 'border-transparent text-slate-400 hover:text-slate-200'
+                            }`}
+                    >
+                        <Users size={18} />
+                        Alliance Management
                     </button>
                     {/* Placeholder for future tab
                     <button
@@ -286,6 +318,19 @@ export default function AdminDashboard() {
                         </div>
 
                     </div>
+                )}
+
+                {/* Facility Control Tab */}
+                {activeTab === 'facility' && (
+                    <FacilityControl
+                        buildings={buildings}
+                        onUpdateBuilding={handleUpdateBuilding}
+                    />
+                )}
+
+                {/* Alliance Management Tab */}
+                {activeTab === 'alliance' && (
+                    <AllianceManagement />
                 )}
             </main>
         </div>

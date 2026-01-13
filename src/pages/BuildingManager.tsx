@@ -121,9 +121,20 @@ export default function BuildingManager() {
     }, []);
 
     const handleUpdateBuilding = useCallback((buildingId: string, updates: Partial<Building>) => {
-        setBuildings(prev => prev.map(b =>
-            b.id === buildingId ? { ...b, ...updates, status: calculateStatus({ ...b, ...updates }) } : b
-        ));
+        setBuildings(prev => {
+            const newBuildings = prev.map(b => {
+                if (b.id === buildingId) {
+                    const updated = { ...b, ...updates };
+                    // Recalculate status with new protection time
+                    if (updated.type === 'engineering_station' && updates.protectionEndTime !== undefined) {
+                        updated.status = calculateStatus(updated);
+                    }
+                    return updated;
+                }
+                return b;
+            });
+            return newBuildings;
+        });
     }, [setBuildings]);
 
     // Ensure buildings is safe to render

@@ -84,7 +84,13 @@ export interface Coordinates {
     y: number;
 }
 
-// Main Building interface
+// Facility-specific status for engineering stations
+export type FacilityStatus =
+    | 'protected'    // 3-day protection period (blue)
+    | 'contested'    // 24-hour contested period (red)
+    | 'unassigned';  // Not assigned to any alliance
+
+// Building interface
 export interface Building {
     id: string;                     // F01, C01, ES01, etc.
     name: string;                   // Display name
@@ -98,9 +104,9 @@ export interface Building {
     allianceName?: string;          // Alliance abbreviation (e.g., "BaB")
 
     // Engineering Station time fields
-    captureTime?: number;           // Unix timestamp - when captured
+    // REMOVED: captureTime?: number;
     protectionEndTime?: number;     // Unix timestamp - protection period ends
-    openTime?: number;              // Unix timestamp - opens after protection
+    openTime?: number;              // Kept for backward compatibility
 
     // Fortress/Stronghold time fields
     fixedOpenTime?: number;         // Unix timestamp - fixed game schedule

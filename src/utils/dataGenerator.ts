@@ -199,9 +199,8 @@ export function generateInitialBuildings(): Building[] {
 
     // Add Engineering Stations (74)
     worldData.engineering_stations.forEach((e, i) => {
-        // Random capture time within the last 0-2 days
-        const captureTime = now - randomInt(0, 2 * 24 * 3600);
-        const protectionEndTime = captureTime + PROTECTION_DURATION;
+        // Default to 3 days protection from now
+        const protectionEndTime = now + (3 * 24 * 60 * 60);
 
         // Map Chinese name to English subtype
         const stationSubType: StationSubType = STATION_TYPE_MAP[e.name] || 'production';
@@ -213,7 +212,6 @@ export function generateInitialBuildings(): Building[] {
             type: 'engineering_station',
             stationSubType,
             alliance: 'unassigned',
-            captureTime,
             protectionEndTime,
             openTime: protectionEndTime, // Opens when protection ends
             coordinates: { x: e.x, y: e.y },
