@@ -184,7 +184,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({
                 onTouchMove={handleColTouchMove}
                 onTouchEnd={(e) => handleColTouchEnd(e, index)}
               >
-                <div className="flex items-center justify-between gap-3 bg-teal-950/30 px-3 py-1.5 rounded-md border border-teal-500/10 hover:border-teal-500/30 transition-colors cursor-grab active:cursor-grabbing">
+                <div className="flex items-center justify-between gap-3 bg-teal-800/50 px-3 py-1.5 rounded-md border border-teal-500/20 hover:border-teal-500/40 transition-colors cursor-grab active:cursor-grabbing">
                   <div className="flex items-center gap-2 overflow-hidden">
                     <GripVertical size={12} className="opacity-30" />
                     <span className="truncate" title={col.name}>{col.name}</span>
@@ -195,6 +195,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({
                       onMouseDown={(e) => e.stopPropagation()}
                       onClick={() => onRenameColumn(col.id, col.name)}
                       className="text-teal-300 hover:text-teal-100 p-1 rounded hover:bg-teal-900/50 transition-colors"
+                      aria-label="Rename column"
                     >
                       <Pencil size={12} />
                     </button>
@@ -202,7 +203,8 @@ export const GroupTable: React.FC<GroupTableProps> = ({
                       type="button"
                       onMouseDown={(e) => e.stopPropagation()}
                       onClick={() => onDeleteColumn(col.id)}
-                      className="text-teal-400/50 hover:text-coral-400 p-1 rounded hover:bg-teal-900/50"
+                      className="text-teal-400 hover:text-coral-400 p-1 rounded hover:bg-teal-900/50 transition-colors"
+                      aria-label="Delete column"
                     >
                       <X size={12} />
                     </button>
@@ -268,6 +270,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({
                   onClick={() => onRemovePlayer(player.fid)}
                   className="text-white/20 hover:text-coral-400 transition-colors p-2 rounded-full hover:bg-white/5"
                   title="Remove from group"
+                  aria-label="Remove from group"
                 >
                   <Trash2 size={16} />
                 </button>

@@ -166,6 +166,7 @@ export const ImportPanel: React.FC<ImportPanelProps> = ({ foundPlayers, setFound
               onClick={handleSingleSearch}
               disabled={status.isImporting}
               className="w-10 h-10 shrink-0 flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors disabled:opacity-50"
+              aria-label="Search"
             >
               {status.isImporting ? <Loader2 className="animate-spin size-5" /> : <Search size={20} />}
             </button>
@@ -206,6 +207,7 @@ export const ImportPanel: React.FC<ImportPanelProps> = ({ foundPlayers, setFound
                     onClick={() => setStatus({ total: 0, current: 0, success: 0, failed: 0, failedIds: [], isImporting: false })}
                     className="text-white/40 hover:text-white transition-colors"
                     title="Close"
+                    aria-label="Close"
                   >
                     <X size={14} />
                   </button>
@@ -242,11 +244,12 @@ export const ImportPanel: React.FC<ImportPanelProps> = ({ foundPlayers, setFound
       <div className="flex-1 lg:overflow-hidden flex flex-col glass-panel border-t-0 rounded-b-xl mt-2 lg:mt-4 min-h-0">
         <div className="p-2 lg:p-3 border-b border-white/10 shrink-0">
           <div className="flex justify-between items-center">
-            <h3 className="font-semibold text-white/80 text-sm lg:text-base">Found Players ({foundPlayers.length})</h3>
+            <h2 className="font-semibold text-white/80 text-sm lg:text-base">Found Players ({foundPlayers.length})</h2>
             <button
               onClick={() => setFoundPlayers([])}
               className="text-white/40 hover:text-red-400 transition-colors"
               title="Clear All"
+              aria-label="Clear All"
             >
               <Trash2 size={16} />
             </button>

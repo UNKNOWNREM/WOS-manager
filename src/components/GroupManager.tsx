@@ -414,7 +414,7 @@ export const GroupManager: React.FC = () => {
               onChange={(e) => setTempInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleModalSubmit()}
               placeholder="Enter name..."
-              className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-teal-500 transition-colors"
+              className="w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-teal-500 transition-colors"
             />
           </div>
         ) : (

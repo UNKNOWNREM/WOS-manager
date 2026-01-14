@@ -206,6 +206,7 @@ export default function BuildingManager() {
                                         onClick={() => setLeftPanelCollapsed(!leftPanelCollapsed)}
                                         className="p-1.5 rounded hover:bg-white/10 transition-colors"
                                         title={leftPanelCollapsed ? 'Expand panel' : 'Collapse panel'}
+                                        aria-label={leftPanelCollapsed ? 'Expand panel' : 'Collapse panel'}
                                     >
                                         {leftPanelCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
                                     </button>
@@ -221,6 +222,7 @@ export default function BuildingManager() {
                                             onClick={decreaseZoom}
                                             className="p-1.5 rounded hover:bg-white/10 transition-colors"
                                             title="Decrease size"
+                                            aria-label="Decrease size"
                                         >
                                             <ZoomOut size={14} />
                                         </button>
@@ -231,6 +233,7 @@ export default function BuildingManager() {
                                             onClick={increaseZoom}
                                             className="p-1.5 rounded hover:bg-white/10 transition-colors"
                                             title="Increase size"
+                                            aria-label="Increase size"
                                         >
                                             <ZoomIn size={14} />
                                         </button>
@@ -238,6 +241,7 @@ export default function BuildingManager() {
                                             onClick={resetZoom}
                                             className="p-1 rounded hover:bg-white/10 transition-colors"
                                             title="Reset size"
+                                            aria-label="Reset size"
                                         >
                                             <RotateCcw size={12} />
                                         </button>
@@ -365,6 +369,7 @@ export default function BuildingManager() {
                                     onClick={() => setActiveTab('all')}
                                     className={`p-2 rounded-lg transition-colors ${activeTab === 'all' ? 'bg-white/15' : 'hover:bg-white/10'}`}
                                     title="All buildings"
+                                    aria-label="All buildings"
                                 >
                                     <ListIcon size={18} />
                                 </button>
@@ -372,6 +377,7 @@ export default function BuildingManager() {
                                     onClick={() => setActiveTab('fortress')}
                                     className={`p-2 rounded-lg transition-colors ${activeTab === 'fortress' ? 'bg-white/15 text-red-400' : 'hover:bg-white/10'}`}
                                     title="Fortresses"
+                                    aria-label="Fortresses"
                                 >
                                     <Castle size={18} />
                                 </button>
@@ -379,6 +385,7 @@ export default function BuildingManager() {
                                     onClick={() => setActiveTab('stronghold')}
                                     className={`p-2 rounded-lg transition-colors ${activeTab === 'stronghold' ? 'bg-white/15 text-purple-400' : 'hover:bg-white/10'}`}
                                     title="Strongholds"
+                                    aria-label="Strongholds"
                                 >
                                     <Shield size={18} />
                                 </button>
@@ -386,6 +393,7 @@ export default function BuildingManager() {
                                     onClick={() => setActiveTab('engineering_station')}
                                     className={`p-2 rounded-lg transition-colors ${activeTab === 'engineering_station' ? 'bg-white/15 text-blue-400' : 'hover:bg-white/10'}`}
                                     title="Engineering Stations"
+                                    aria-label="Engineering Stations"
                                 >
                                     <Building2 size={18} />
                                 </button>
@@ -436,7 +444,6 @@ function TabButton({
                 ? 'bg-grad-smoke-light text-white shadow-md'
                 : 'bg-white/5 hover:bg-white/10 text-slate-400'
                 }`}
-            aria-label={`Filter by ${label}`}
         >
             <span className={active ? 'text-white' : color}>{icon}</span>
             <span>{label}</span>

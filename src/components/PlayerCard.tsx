@@ -169,15 +169,15 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player, onRemove }) => {
           group-hover:border-teal-500/50 transition-colors
         "
         onError={(e) => {
-            (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${player.nickname}&background=random`;
+          (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${player.nickname}&background=random`;
         }}
       />
 
       {/* Info Section */}
       <div className="flex-1 flex flex-col justify-center min-w-0 gap-1">
         {/* Nickname */}
-        <h3 
-          className="text-[1.125rem] font-semibold text-[#f7fafc] truncate leading-tight" 
+        <h3
+          className="text-[1.125rem] font-semibold text-[#f7fafc] truncate leading-tight"
           title={player.nickname}
         >
           {player.nickname}
@@ -204,7 +204,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player, onRemove }) => {
           )}
         </div>
       </div>
-      
+
       {/* Remove Button (Mobile-friendly) */}
       <button
         onClick={handleRemove}
@@ -217,6 +217,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player, onRemove }) => {
           z-10
         "
         title="Remove player"
+        aria-label="Remove player"
       >
         <X size={16} />
       </button>
@@ -226,13 +227,14 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player, onRemove }) => {
         onClick={handleQuickAdd}
         className="
           absolute right-3 top-1/2 -translate-y-1/2
-          p-2 rounded-full bg-teal-600 hover:bg-teal-500 active:bg-teal-700
+          p-2 rounded-full bg-teal-700 hover:bg-teal-600 active:bg-teal-800
           text-white shadow-lg hover:shadow-teal-600/50
           lg:opacity-0 lg:group-hover:opacity-100
           transition-all duration-200 hover:scale-110 active:scale-95
           z-10
         "
         title="Add to current group"
+        aria-label="Add to current group"
       >
         <PlusCircle size={20} />
       </button>
@@ -240,14 +242,14 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player, onRemove }) => {
       {/* Drag Handle Hint (Desktop only) */}
       <div className="absolute right-3 top-3 opacity-0 group-hover:opacity-20 transition-opacity pointer-events-none hidden lg:block">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="9" cy="12" r="1" />
-            <circle cx="9" cy="5" r="1" />
-            <circle cx="9" cy="19" r="1" />
-            <circle cx="15" cy="12" r="1" />
-            <circle cx="15" cy="5" r="1" />
-            <circle cx="15" cy="19" r="1" />
+          <circle cx="9" cy="12" r="1" />
+          <circle cx="9" cy="5" r="1" />
+          <circle cx="9" cy="19" r="1" />
+          <circle cx="15" cy="12" r="1" />
+          <circle cx="15" cy="5" r="1" />
+          <circle cx="15" cy="19" r="1" />
         </svg>
       </div>
-    </div>
+    </div >
   );
 };
