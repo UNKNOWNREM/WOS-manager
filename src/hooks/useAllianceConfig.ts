@@ -44,9 +44,39 @@ export function useAllianceConfig() {
         }
     };
 
+    const addAlliance = () => {
+        const id = `alliance_${Date.now()}`;
+        const newAlliance = {
+            id,
+            name: 'New Alliance',
+            abbr: 'NEW',
+            color: '#94a3b8', // Slate-400 default
+            notes: ''
+        };
+
+        setConfig(prev => ({
+            ...prev,
+            [id]: newAlliance
+        }));
+
+        return id;
+    };
+
+    const deleteAlliance = (id: string) => {
+        if (id === 'unassigned') return; // Protect unassigned
+
+        setConfig(prev => {
+            const newConfig = { ...prev };
+            delete newConfig[id];
+            return newConfig;
+        });
+    };
+
     return {
         config,
         updateAlliance,
+        addAlliance,
+        deleteAlliance,
         resetToDefaults,
         exportConfig,
         importConfig

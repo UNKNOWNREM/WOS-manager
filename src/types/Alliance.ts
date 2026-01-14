@@ -1,5 +1,5 @@
 export interface AllianceInfo {
-    id: 'allianceA' | 'allianceB' | 'allianceC' | 'allianceD' | 'allianceE';
+    id: string;
     name: string;        // Full name: "Alliance Alpha"
     abbr: string;        // Abbreviation: "AAA" (shown on map)
     color: string;       // Hex color: "#ef4444"

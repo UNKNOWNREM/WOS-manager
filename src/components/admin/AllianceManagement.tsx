@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Shield, Save, RefreshCw, FileDown, FileUp } from 'lucide-react';
+import { Shield, Save, RefreshCw, FileDown, FileUp, Trash2 } from 'lucide-react';
 import { useAllianceConfig } from '../../hooks/useAllianceConfig';
 
 export function AllianceManagement() {
-    const { config, updateAlliance, resetToDefaults, exportConfig, importConfig } = useAllianceConfig();
+    const { config, updateAlliance, addAlliance, deleteAlliance, resetToDefaults, exportConfig, importConfig } = useAllianceConfig();
     const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
 
     const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
@@ -98,8 +98,24 @@ export function AllianceManagement() {
                 {alliances.map((alliance) => (
                     <div
                         key={alliance.id}
-                        className="bg-slate-800 rounded-xl border border-slate-700 p-6"
+                        className="bg-slate-800 rounded-xl border border-slate-700 p-6 relative group"
                     >
+                        {/* Delete Button (absolute positioned) */}
+                        {alliance.id !== 'unassigned' && (
+                            <button
+                                onClick={() => {
+                                    if (confirm(`Delete alliance "${alliance.name}"? This cannot be undone.`)) {
+                                        deleteAlliance(alliance.id);
+                                        showNotification(`Alliance "${alliance.name}" deleted`);
+                                    }
+                                }}
+                                className="absolute top-4 right-4 p-2 text-slate-500 hover:text-red-400 hover:bg-slate-700 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                                title="Delete Alliance"
+                            >
+                                <Trash2 size={16} />
+                            </button>
+                        )}
+
                         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                             <div
                                 className="w-4 h-4 rounded"
@@ -173,6 +189,22 @@ export function AllianceManagement() {
                         </div>
                     </div>
                 ))}
+
+                {/* Add New Button */}
+                <button
+                    onClick={() => {
+                        addAlliance();
+                        showNotification('New alliance added');
+                        // Optional: scroll to bottom
+                        setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 100);
+                    }}
+                    className="w-full py-4 border-2 border-dashed border-slate-700 rounded-xl text-slate-400 hover:border-indigo-500 hover:text-indigo-400 hover:bg-slate-800/50 transition-all flex items-center justify-center gap-2"
+                >
+                    <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center">
+                        <span className="text-xl font-bold">+</span>
+                    </div>
+                    Add New Alliance
+                </button>
             </div>
         </div>
     );

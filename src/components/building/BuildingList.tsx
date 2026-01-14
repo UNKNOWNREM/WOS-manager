@@ -1,9 +1,11 @@
 import { useRef, useEffect, useCallback } from 'react';
 import { Building } from '../../types/Building';
 import BuildingCard from './BuildingCard';
+import { AllianceConfig } from '../../types/Alliance';
 
 interface BuildingListProps {
     buildings: Building[];
+    allianceConfig?: AllianceConfig;
     selectedId: string | null;
     onSelect: (id: string) => void;
     onUpdate: (id: string, updates: Partial<Building>) => void;
@@ -16,6 +18,7 @@ interface BuildingListProps {
  */
 export default function BuildingList({
     buildings,
+    allianceConfig,
     selectedId,
     onSelect,
     onUpdate,
@@ -64,6 +67,7 @@ export default function BuildingList({
                 <BuildingCard
                     key={building.id}
                     building={building}
+                    allianceConfig={allianceConfig}
                     isSelected={selectedId === building.id}
                     onSelect={() => onSelect(building.id)}
                     onUpdate={(updates) => onUpdate(building.id, updates)}

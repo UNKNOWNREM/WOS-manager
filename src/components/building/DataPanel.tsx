@@ -72,11 +72,11 @@ export default function DataPanel({ buildings, onImport, zoom = 1 }: DataPanelPr
     };
 
     return (
-        <div className="p-3 border-t border-white/10">
+        <div className="p-3 border-t border-cloud/10">
             <div className="flex items-center gap-2 mb-3">
-                <Database size={16 * zoom} className="text-blue-400" />
+                <Database size={16 * zoom} className="text-pink-cyan" />
                 <h3
-                    className="font-semibold"
+                    className="font-semibold text-slate-200"
                     style={{ fontSize: `${0.85 * zoom}rem` }}
                 >
                     Data
@@ -87,16 +87,17 @@ export default function DataPanel({ buildings, onImport, zoom = 1 }: DataPanelPr
                 {/* Export Button */}
                 <button
                     onClick={handleExport}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 rounded-lg transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-800/50 hover:bg-slate-800 text-pink-cyan border border-pink-cyan/30 rounded-lg transition-colors"
                     style={{ fontSize: `${0.75 * zoom}rem` }}
                     title="Export buildings data to JSON file"
+                    aria-label="Export data to JSON"
                 >
                     <Download size={14 * zoom} />
                     Export
                 </button>
 
                 {/* Import Button */}
-                <label className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-green-600/20 hover:bg-green-600/30 text-green-300 rounded-lg transition-colors cursor-pointer"
+                <label className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-grad-smoke-light hover:brightness-110 text-white rounded-lg transition-colors cursor-pointer shadow-lg hover:shadow-smoke-light/50"
                     style={{ fontSize: `${0.75 * zoom}rem` }}
                     title="Import buildings data from JSON file"
                 >
@@ -108,6 +109,7 @@ export default function DataPanel({ buildings, onImport, zoom = 1 }: DataPanelPr
                         accept=".json"
                         onChange={handleImport}
                         className="hidden"
+                        aria-label="Import data from JSON"
                     />
                 </label>
             </div>

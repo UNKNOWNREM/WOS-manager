@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Building2, Shield, Swords, Clock, Users } from 'lucide-react';
+import { Building2, Shield, Swords, Clock, Users, ChevronDown, ChevronRight } from 'lucide-react';
+import { useAllianceConfig } from '../../hooks/useAllianceConfig';
 import { Building } from '../../types/Building';
 import { calculateFacilityStatus } from '../../utils/timeCalculations';
 import { StatCard } from './StatCard';
@@ -12,6 +13,8 @@ interface FacilityControlProps {
 
 export function FacilityControl({ buildings, onUpdateBuilding }: FacilityControlProps) {
     const [sortBy, setSortBy] = useState<'time' | 'alliance' | 'id'>('time');
+    const [isFortressCollapsed, setIsFortressCollapsed] = useState(false);
+    const [isStationsCollapsed, setIsStationsCollapsed] = useState(false);
 
     // Calculate statistics
     const stats = useMemo(() => {
@@ -66,6 +69,8 @@ export function FacilityControl({ buildings, onUpdateBuilding }: FacilityControl
         [buildings]
     );
 
+    const { config: allianceConfig } = useAllianceConfig();
+
     // Sort function
     const sortBuildings = (buildingsList: Building[]) => {
         const sorted = [...buildingsList];
@@ -78,7 +83,11 @@ export function FacilityControl({ buildings, onUpdateBuilding }: FacilityControl
                     return aTime - bTime;
                 });
             case 'alliance':
-                return sorted.sort((a, b) => a.alliance.localeCompare(b.alliance));
+                return sorted.sort((a, b) => {
+                    const nameA = allianceConfig[a.alliance]?.name || a.alliance;
+                    const nameB = allianceConfig[b.alliance]?.name || b.alliance;
+                    return nameA.localeCompare(nameB);
+                });
             case 'id':
                 return sorted.sort((a, b) => a.id.localeCompare(b.id));
             default:
@@ -95,26 +104,28 @@ export function FacilityControl({ buildings, onUpdateBuilding }: FacilityControl
                     value={stats.total}
                     icon={<Building2 size={20} />}
                     color="text-gray-300"
+                    bgColor="bg-slate-800/80 border border-slate-600"
                 />
                 <StatCard
                     title="Protected"
                     value={stats.protected}
                     icon={<Shield size={20} />}
                     color="text-blue-400"
-                    bgColor="bg-blue-900/20"
+                    bgColor="bg-slate-800/80 border border-slate-600"
                 />
                 <StatCard
                     title="Contested"
                     value={stats.contested}
                     icon={<Swords size={20} />}
                     color="text-red-400"
-                    bgColor="bg-red-900/20"
+                    bgColor="bg-slate-800/80 border border-slate-600"
                 />
                 <StatCard
                     title="Unassigned"
                     value={stats.unassigned}
                     icon={<Users size={20} />}
                     color="text-gray-400"
+                    bgColor="bg-slate-800/80 border border-slate-600"
                 />
             </div>
 
@@ -124,25 +135,28 @@ export function FacilityControl({ buildings, onUpdateBuilding }: FacilityControl
                     value={fortressStronghold.length}
                     icon={<Building2 size={20} />}
                     color="text-purple-400"
+                    bgColor="bg-slate-800/80 border border-slate-600"
                 />
                 <StatCard
                     title="Engineering Stations"
                     value={engineeringStations.length}
                     icon={<Building2 size={20} />}
                     color="text-blue-400"
+                    bgColor="bg-slate-800/80 border border-slate-600"
                 />
                 <StatCard
                     title="Expiring Soon (<6h)"
                     value={stats.expiringSoon}
                     icon={<Clock size={20} />}
                     color="text-yellow-400"
-                    bgColor="bg-yellow-900/20"
+                    bgColor="bg-slate-800/80 border border-slate-600"
                 />
                 <StatCard
                     title="Recently Updated"
                     value={0}
                     icon={<Clock size={20} />}
                     color="text-green-400"
+                    bgColor="bg-slate-800/80 border border-slate-600"
                 />
             </div>
 
@@ -161,37 +175,65 @@ export function FacilityControl({ buildings, onUpdateBuilding }: FacilityControl
             </div>
 
             {/* Fortresses & Strongholds Section */}
-            <div>
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <Building2 size={18} className="text-purple-400" />
-                    Fortresses & Strongholds ({fortressStronghold.length})
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {sortBuildings(fortressStronghold).map(building => (
-                        <FacilityCard
-                            key={building.id}
-                            building={building}
-                            onUpdate={onUpdateBuilding}
-                        />
-                    ))}
-                </div>
+            <div className="glass-panel rounded-xl overflow-hidden border border-cloud/10">
+                <button
+                    onClick={() => setIsFortressCollapsed(!isFortressCollapsed)}
+                    className="w-full flex items-center justify-between p-4 bg-slate-900/40 hover:bg-slate-900/60 transition-colors"
+                >
+                    <div className="flex items-center gap-2">
+                        <Building2 size={18} className="text-purple-400" />
+                        <h3 className="font-semibold text-slate-200">
+                            Fortresses & Strongholds ({fortressStronghold.length})
+                        </h3>
+                    </div>
+                    {isFortressCollapsed ? <ChevronRight size={20} className="text-slate-400" /> : <ChevronDown size={20} className="text-slate-400" />}
+                </button>
+
+                {!isFortressCollapsed && (
+                    <div className="p-4 bg-black/20">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {sortBuildings(fortressStronghold).map(building => (
+                                <FacilityCard
+                                    key={building.id}
+                                    building={building}
+                                    allianceConfig={allianceConfig}
+                                    onUpdate={onUpdateBuilding}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Engineering Stations Section */}
-            <div>
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <Building2 size={18} className="text-blue-400" />
-                    Engineering Stations ({engineeringStations.length})
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {sortBuildings(engineeringStations).map(building => (
-                        <FacilityCard
-                            key={building.id}
-                            building={building}
-                            onUpdate={onUpdateBuilding}
-                        />
-                    ))}
-                </div>
+            <div className="glass-panel rounded-xl overflow-hidden border border-cloud/10">
+                <button
+                    onClick={() => setIsStationsCollapsed(!isStationsCollapsed)}
+                    className="w-full flex items-center justify-between p-4 bg-slate-900/40 hover:bg-slate-900/60 transition-colors"
+                >
+                    <div className="flex items-center gap-2">
+                        <Building2 size={18} className="text-blue-400" />
+                        <h3 className="font-semibold text-slate-200">
+                            Engineering Stations ({engineeringStations.length})
+                        </h3>
+                    </div>
+                    {isStationsCollapsed ? <ChevronRight size={20} className="text-slate-400" /> : <ChevronDown size={20} className="text-slate-400" />}
+                </button>
+
+                {!isStationsCollapsed && (
+                    <div className="p-4 bg-black/20">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {sortBuildings(engineeringStations).map(building => (
+                                <FacilityCard
+                                    key={building.id}
+                                    building={building}
+                                    allianceConfig={allianceConfig}
+                                    onUpdate={onUpdateBuilding}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

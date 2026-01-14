@@ -24,6 +24,7 @@ import {
     calculateStatus,
 } from '../types/Building';
 import { useLocalStorage, useLeftPanelZoom } from '../hooks/useLocalStorage';
+import { useAllianceConfig } from '../hooks/useAllianceConfig';
 import {
     generateInitialBuildings,
     sortByOpenTime,
@@ -35,9 +36,10 @@ import BuildingList from '../components/building/BuildingList';
 import DataPanel from '../components/building/DataPanel';
 
 import MapView3D from '../components/building/MapView3D';
-import { INITIAL_REWARDS, getReward, RewardCycle, REWARD_CYCLES } from '../data/rewards';
+import { INITIAL_REWARDS, getReward, RewardCycle, REWARD_CYCLES, RewardConfig } from '../data/rewards';
 import { LanguageSwitcher } from '../components/common/LanguageSwitcher';
 import { Header } from '../components/common/Header';
+import { Footer } from '../components/common/Footer';
 
 /**
  * Main Building Manager Page Component
@@ -45,12 +47,12 @@ import { Header } from '../components/common/Header';
  */
 export default function BuildingManager() {
     // Buildings data
-    // Changed key to 'buildings_v3' to ensure fresh start with valid 91 items
-    // Initialize synchronously with default data if empty
-    const [buildings, setBuildings] = useLocalStorage<Building[]>('buildings_v4', []);
+    // Data migrated from 'buildings_v4' to 'buildings' via App.tsx migration
+    const [buildings, setBuildings] = useLocalStorage<Building[]>('buildings', []);
 
     // Reward cycle state
     const [currentCycle, setCurrentCycle] = useLocalStorage<RewardCycle>('currentCycle', 1);
+    const { config: allianceConfig } = useAllianceConfig();
 
     // Initialize buildings if empty
     useEffect(() => {
@@ -69,31 +71,43 @@ export default function BuildingManager() {
     const [searchQuery, setSearchQuery] = useState('');
     const [autoSort, setAutoSort] = useLocalStorage('autoSort', true);
 
-    // Memoized filtered and sorted buildings
+    const [rewards] = useLocalStorage<RewardConfig>('rewards_config', INITIAL_REWARDS);
+
+    // Memoized filtered and sorted buildings with dynamic rewards
     const filteredBuildings = useMemo(() => {
-        let filtered = buildings;
+        // First, inject dynamic rewards based on current cycle and config
+        let processed = buildings.map(b => {
+            // Only inject for relevant types to save perf
+            if (b.type === 'fortress' || b.type === 'stronghold') {
+                const dynamicReward = getReward(rewards, b.id, currentCycle);
+                if (dynamicReward) {
+                    return { ...b, reward: dynamicReward };
+                }
+            }
+            return b;
+        });
 
         // Apply type filter
         if (activeTab !== 'all') {
             if (BUILDING_TYPES.includes(activeTab as BuildingType)) {
-                filtered = filterByType(filtered, [activeTab as BuildingType]);
+                processed = filterByType(processed, [activeTab as BuildingType]);
             } else if (STATION_SUBTYPES.includes(activeTab as StationSubType)) {
-                filtered = filterByStationSubType(filtered, [activeTab as StationSubType]);
+                processed = filterByStationSubType(processed, [activeTab as StationSubType]);
             }
         }
 
         // Apply search query
         if (searchQuery) {
-            filtered = searchBuildings(filtered, searchQuery);
+            processed = searchBuildings(processed, searchQuery);
         }
 
         // Apply sorting
         if (autoSort) {
-            filtered = sortByOpenTime(filtered);
+            processed = sortByOpenTime(processed);
         }
 
-        return filtered;
-    }, [buildings, activeTab, searchQuery, autoSort, currentCycle]);
+        return processed;
+    }, [buildings, activeTab, searchQuery, autoSort, currentCycle, rewards]);
 
     // Calculate counts for tabs
     const buildingCounts = useMemo(() => {
@@ -141,7 +155,7 @@ export default function BuildingManager() {
     const safeBuildings = Array.isArray(buildings) ? buildings : [];
 
     return (
-        <div className="min-h-screen h-auto flex flex-col font-sans bg-slate-900 text-slate-100">
+        <div className="min-h-screen h-auto flex flex-col font-sans text-slate-100">
             {/* Header */}
             <Header
                 title="Building Manager"
@@ -151,23 +165,25 @@ export default function BuildingManager() {
                     <>
                         <LanguageSwitcher />
                         {/* Cycle Selector */}
-                        <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg p-1.5 border border-white/10">
-                            <span className="text-xs text-slate-400 px-2 whitespace-nowrap">Cycle:</span>
+                        <div className="flex items-center gap-2 bg-slate-900/40 rounded-lg p-1.5 border border-cloud/10">
+                            <span className="text-xs text-slate-300 px-2 whitespace-nowrap">Cycle:</span>
                             <select
                                 value={currentCycle}
                                 onChange={(e) => setCurrentCycle(Number(e.target.value) as RewardCycle)}
-                                className="bg-slate-900 text-white text-sm rounded px-2 py-1 border border-white/20 focus:outline-none focus:border-blue-500"
+                                className="bg-transparent text-white text-sm focus:outline-none cursor-pointer"
+                                aria-label="Select Reward Cycle"
                             >
                                 {REWARD_CYCLES.map(c => (
-                                    <option key={c} value={c}>Week {c}</option>
+                                    <option key={c} value={c} className="bg-slate-900">Week {c}</option>
                                 ))}
                             </select>
                         </div>
 
                         <a
                             href="/"
-                            className="flex items-center gap-2 px-3 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg transition-colors shadow-lg hover:shadow-teal-600/50 text-sm whitespace-nowrap"
+                            className="flex items-center gap-2 px-3 py-2 bg-grad-smoke-light hover:brightness-110 text-white rounded-lg transition-all shadow-lg hover:shadow-smoke-light/50 text-sm whitespace-nowrap"
                             title="Back to Manager"
+                            aria-label="Back to WOS Manager Home"
                         >
                             <Building2 size={16} />
                             <span className="hidden sm:inline">WOS Manager</span>
@@ -181,7 +197,7 @@ export default function BuildingManager() {
                 {/* Left Panel: Building List */}
                 <section className={`transition-all duration-300 ${leftPanelCollapsed ? 'lg:col-span-1' : 'lg:col-span-4'
                     } flex flex-col overflow-hidden`}>
-                    <div className="glass-panel rounded-xl flex flex-col overflow-hidden h-full">
+                    <div className="glass-panel rounded-xl flex flex-col overflow-hidden h-full border border-cloud/10">
                         {/* Panel Header with Toggle */}
                         <div className={`flex-shrink-0 p-4 ${!leftPanelCollapsed ? 'border-b border-white/10' : ''}`}>
                             <div className={`flex items-center justify-between ${!leftPanelCollapsed ? 'mb-3' : ''}`}>
@@ -240,7 +256,8 @@ export default function BuildingManager() {
                                             placeholder="Search buildings..."
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="w-full pl-8 pr-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-blue-500/50"
+                                            className="w-full pl-8 pr-3 py-2 rounded-lg bg-black/20 border border-cloud/10 text-sm focus:outline-none focus:border-pink-cyan/50 text-white placeholder-slate-400 transition-colors"
+                                            aria-label="Search buildings"
                                         />
                                     </div>
 
@@ -321,6 +338,7 @@ export default function BuildingManager() {
                             <div className="flex-1 overflow-y-auto min-h-0 max-h-[70vh]">
                                 <BuildingList
                                     buildings={filteredBuildings}
+                                    allianceConfig={allianceConfig}
                                     selectedId={selectedBuilding}
                                     onSelect={handleSelectFromList}
                                     onUpdate={handleUpdateBuilding}
@@ -390,11 +408,7 @@ export default function BuildingManager() {
             </main >
 
             {/* Footer */}
-            <footer className="flex-shrink-0 mt-4 text-center">
-                <div className="text-white/20 text-xs">
-                    Data stored locally in browser. Click buildings on map or list to interact.
-                </div>
-            </footer>
+            <Footer />
         </div >
     );
 }
@@ -419,11 +433,12 @@ function TabButton({
         <button
             onClick={onClick}
             className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors ${active
-                ? 'bg-white/15 text-white'
-                : 'bg-white/5 hover:bg-white/10 text-gray-400'
+                ? 'bg-grad-smoke-light text-white shadow-md'
+                : 'bg-white/5 hover:bg-white/10 text-slate-400'
                 }`}
+            aria-label={`Filter by ${label}`}
         >
-            <span className={active ? color : ''}>{icon}</span>
+            <span className={active ? 'text-white' : color}>{icon}</span>
             <span>{label}</span>
             <span className="opacity-60">({count})</span>
         </button>

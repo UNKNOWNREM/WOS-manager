@@ -6,12 +6,13 @@ import { RankPlayerCard } from './RankPlayerCard';
 import { SupportButton, SourceCodeButton } from './SupportButton';
 import { LanguageSwitcher } from './common/LanguageSwitcher';
 import { Header } from './common/Header';
+import { Footer } from './common/Footer';
 
 const RANK_CONFIG = [
-  { id: 'R4' as RankLevel, name: 'Co-Leader', color: 'from-purple-600 to-purple-800' },
-  { id: 'R3' as RankLevel, name: 'Rank 3', color: 'from-blue-600 to-blue-800' },
-  { id: 'R2' as RankLevel, name: 'Rank 2', color: 'from-green-600 to-green-800' },
-  { id: 'R1' as RankLevel, name: 'Rank 1', color: 'from-gray-600 to-gray-800' },
+  { id: 'R4' as RankLevel, name: 'Co-Leader', color: 'bg-grad-smoke-light text-white' }, // Set 2 #3 烟光
+  { id: 'R3' as RankLevel, name: 'Rank 3', color: 'bg-grad-mountain-mist text-white' }, // Set 2 #4 岳霞
+  { id: 'R2' as RankLevel, name: 'Rank 2', color: 'bg-grad-grey-moon text-white' }, // Set 1 #3 灰月
+  { id: 'R1' as RankLevel, name: 'Rank 1', color: 'bg-grad-star-frost text-white/90' }, // Set 2 #5 星霜
 ];
 
 export const RankManager: React.FC = () => {
@@ -185,14 +186,14 @@ export const RankManager: React.FC = () => {
   const totalOnline = players.length;
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-slate-900 text-slate-100">
+    <div className="min-h-screen flex flex-col font-sans text-slate-100">
       {/* Header */}
       <Header
         title="WOS Rank Manager"
         subtitle={
           <div className="flex items-center gap-2">
             <span>Alliance Rank Management System</span>
-            <span className="text-teal-400 text-xs bg-teal-900/30 px-2 py-0.5 rounded border border-teal-800">
+            <span className="text-pink-cyan text-xs bg-slate-900/40 px-2 py-0.5 rounded border border-pink-cyan/30">
               Members: {totalOnline}
             </span>
           </div>
@@ -226,10 +227,12 @@ export const RankManager: React.FC = () => {
       />
 
       <main className="flex-1 p-4 md:p-8 min-h-0">
-
+        {/* ... (keep existing main content) ... */}
         {/* Search and Import Panel */}
         <div className="glass-panel rounded-xl p-4 mb-6 max-w-2xl mx-auto w-full">
+          {/* ... content ... */}
           <div className="flex gap-2 mb-4 bg-black/20 p-1 rounded-lg">
+            {/* ... content ... */}
             <button
               onClick={() => setMode('single')}
               className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${mode === 'single' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'
@@ -253,13 +256,14 @@ export const RankManager: React.FC = () => {
                 value={singleId}
                 onChange={(e) => setSingleId(e.target.value)}
                 placeholder="Enter Player FID"
-                className="flex-1 min-w-0 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+                className="flex-1 min-w-0 bg-black/30 border border-cloud/20 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-pink-cyan transition-colors"
                 onKeyDown={(e) => e.key === 'Enter' && handleSingleSearch()}
               />
               <button
                 onClick={handleSingleSearch}
                 disabled={status.isImporting}
-                className="w-10 h-10 shrink-0 flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors disabled:opacity-50"
+                className="w-10 h-10 shrink-0 flex items-center justify-center bg-smoke-light hover:bg-smoke-light/80 text-white rounded-lg transition-colors disabled:opacity-50"
+                aria-label="Search Player"
               >
                 {status.isImporting ? <Loader2 className="animate-spin size-5" /> : <Search size={20} />}
               </button>
@@ -328,7 +332,7 @@ export const RankManager: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by Nickname or FID..."
-                className="w-full bg-black/20 border border-white/10 rounded-lg pl-10 pr-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+                className="w-full bg-black/30 border border-cloud/20 rounded-lg pl-10 pr-3 py-2 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-pink-cyan transition-colors"
               />
               {searchQuery && (
                 <div className="mt-1 text-xs text-gray-400">
@@ -344,7 +348,7 @@ export const RankManager: React.FC = () => {
           {playersByRank.map(rank => (
             <div key={rank.id} className="glass-panel rounded-xl overflow-hidden">
               {/* Rank Header */}
-              <div className={`px-4 py-3 bg-gradient-to-r ${rank.color} flex items-center justify-between`}>
+              <div className={`px-4 py-3 ${rank.color} flex items-center justify-between`}>
                 <button
                   onClick={() => toggleRankCollapse(rank.id)}
                   className="flex items-center gap-3 flex-1 hover:opacity-90 transition-opacity"
@@ -366,6 +370,7 @@ export const RankManager: React.FC = () => {
                     }}
                     className="p-2 rounded-lg bg-black/30 hover:bg-black/50 text-white transition-colors"
                     title="Copy all IDs in this rank"
+                    aria-label={`Copy all ${rank.name} IDs`}
                   >
                     <Copy size={16} />
                   </button>
@@ -373,7 +378,8 @@ export const RankManager: React.FC = () => {
                   {/* Collapse Toggle */}
                   <button
                     onClick={() => toggleRankCollapse(rank.id)}
-                    className="text-white"
+                    className="text-white hover:text-white/80 transition-colors"
+                    aria-label={collapsedRanks.has(rank.id) ? "Expand Rank" : "Collapse Rank"}
                   >
                     {collapsedRanks.has(rank.id) ? (
                       <ChevronDown size={20} />
@@ -388,7 +394,7 @@ export const RankManager: React.FC = () => {
               {!collapsedRanks.has(rank.id) && (
                 <div className="p-3 space-y-2 bg-black/10">
                   {rank.players.length === 0 ? (
-                    <div className="text-center text-white/30 py-8 text-sm">
+                    <div className="text-center text-slate-400 py-8 text-sm">
                       No members in this rank
                     </div>
                   ) : (
@@ -417,17 +423,7 @@ export const RankManager: React.FC = () => {
 
       </main>
 
-      <footer className="mt-8 text-center">
-        <div className="text-white/20 text-xs mb-4">
-          Data stored locally in browser. New players default to Rank 1.
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex justify-center gap-3">
-          <SourceCodeButton variant="inline" />
-          <SupportButton variant="inline" />
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

@@ -23,8 +23,11 @@ import {
 import { TimeEditor } from '../common/TimeEditor';
 import { CountdownTimer } from '../common/CountdownTimer';
 
+import { AllianceConfig } from '../../types/Alliance';
+
 interface BuildingCardProps {
     building: Building;
+    allianceConfig?: AllianceConfig;
     isSelected: boolean;
     onSelect: () => void;
     onUpdate: (updates: Partial<Building>) => void;
@@ -36,10 +39,26 @@ interface BuildingCardProps {
  * Displays different info based on building type
  */
 const BuildingCard = forwardRef<HTMLDivElement, BuildingCardProps>(
-    ({ building, isSelected, onSelect, onUpdate, zoom }, ref) => {
+    ({ building, allianceConfig, isSelected, onSelect, onUpdate, zoom }, ref) => {
         const [showNotes, setShowNotes] = useState(false);
         const [isEditing, setIsEditing] = useState(false);
         const [showTimeEditor, setShowTimeEditor] = useState(false);
+
+        // Utility to get alliance details
+        const getAllianceDetails = (id: Alliance) => {
+            if (allianceConfig && allianceConfig[id]) {
+                const { name, color } = allianceConfig[id];
+                // For generic ID fallback, we use name if available, otherwise ID
+                return { name, color };
+            }
+            // Fallbacks for legacy/undefined
+            return {
+                name: ALLIANCE_NAMES[id as keyof typeof ALLIANCE_NAMES] || id,
+                color: ALLIANCE_COLORS[id as keyof typeof ALLIANCE_COLORS] || '#64748b' // slate-500
+            };
+        };
+
+        const { name: allianceName, color: allianceColor } = getAllianceDetails(building.alliance);
 
         const icon = useMemo(() => {
             switch (building.type) {
@@ -48,7 +67,7 @@ const BuildingCard = forwardRef<HTMLDivElement, BuildingCardProps>(
                 case 'stronghold':
                     return <Shield size={20 * zoom} className="text-purple-400" />;
                 case 'engineering_station':
-                    return <Building2 size={20 * zoom} className="text-blue-400" />;
+                    return <Building2 size={20 * zoom} className="text-pink-cyan" />;
                 case 'sun_city':
                     return <Sun size={20 * zoom} className="text-yellow-400" />;
                 default:
@@ -97,13 +116,21 @@ const BuildingCard = forwardRef<HTMLDivElement, BuildingCardProps>(
         return (
             <div
                 ref={ref}
-                className={`glass-card rounded-lg p-3 cursor-pointer transition-all ${isSelected ? 'selected' : ''
+                className={`glass-panel rounded-lg p-3 cursor-pointer transition-all hover:bg-white/5 ${isSelected ? 'selected ring-1 ring-pink-cyan/50 bg-white/5' : ''
                     }`}
                 style={{
                     borderLeftWidth: '3px',
-                    borderLeftColor: ALLIANCE_COLORS[building.alliance],
+                    borderLeftColor: allianceColor,
                 }}
                 onClick={onSelect}
+                role="button"
+                tabIndex={0}
+                aria-selected={isSelected}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        onSelect();
+                    }
+                }}
             >
                 {/* Header Row */}
                 <div className="flex items-center justify-between mb-2">
@@ -122,11 +149,11 @@ const BuildingCard = forwardRef<HTMLDivElement, BuildingCardProps>(
                             >
                                 {building.id}
                                 {building.stationSubType && (
-                                    <span className="ml-1 text-blue-400">
+                                    <span className="ml-1 text-pink-cyan">
                                         • {STATION_TYPE_NAMES[building.stationSubType]}
                                     </span>
                                 )}
-                                <span className="ml-2 text-gray-500">
+                                <span className="ml-2 text-slate-500">
                                     ({building.coordinates.x}, {building.coordinates.y})
                                 </span>
                             </p>
@@ -210,7 +237,7 @@ const BuildingCard = forwardRef<HTMLDivElement, BuildingCardProps>(
                     <div className="flex items-center gap-2">
                         {isEditing ? (
                             <select
-                                className="bg-white/10 border border-white/20 rounded px-2 py-1 text-sm"
+                                className="bg-white/10 border border-white/20 rounded px-2 py-1 text-sm max-w-[150px]"
                                 value={building.alliance}
                                 onChange={(e) => handleAllianceChange(e.target.value as Alliance)}
                                 onClick={(e) => e.stopPropagation()}
@@ -218,11 +245,18 @@ const BuildingCard = forwardRef<HTMLDivElement, BuildingCardProps>(
                                 onBlur={() => setIsEditing(false)}
                                 style={{ fontSize: `${0.8 * zoom}rem` }}
                             >
-                                {Object.entries(ALLIANCE_NAMES).map(([key, name]) => (
-                                    <option key={key} value={key} className="bg-gray-800">
-                                        {name}
-                                    </option>
-                                ))}
+                                {allianceConfig
+                                    ? Object.values(allianceConfig).map((alliance) => (
+                                        <option key={alliance.id} value={alliance.id} className="bg-gray-800">
+                                            {alliance.name}
+                                        </option>
+                                    ))
+                                    : Object.entries(ALLIANCE_NAMES).map(([key, name]) => (
+                                        <option key={key} value={key} className="bg-gray-800">
+                                            {name}
+                                        </option>
+                                    ))
+                                }
                             </select>
                         ) : (
                             <button
@@ -235,9 +269,9 @@ const BuildingCard = forwardRef<HTMLDivElement, BuildingCardProps>(
                             >
                                 <div
                                     className="w-2 h-2 rounded-full"
-                                    style={{ backgroundColor: ALLIANCE_COLORS[building.alliance] }}
+                                    style={{ backgroundColor: allianceColor }}
                                 />
-                                <span>{ALLIANCE_NAMES[building.alliance]}</span>
+                                <span>{allianceName}</span>
                                 <ChevronDown size={12} />
                             </button>
                         )}
@@ -248,12 +282,13 @@ const BuildingCard = forwardRef<HTMLDivElement, BuildingCardProps>(
                         {/* Time Edit Button - only for engineering stations */}
                         {isTimeEditable && (
                             <button
-                                className={`p-1.5 rounded hover:bg-white/10 transition-colors ${showTimeEditor ? 'text-blue-400 bg-white/10' : 'text-gray-400'}`}
+                                className={`p-1.5 rounded hover:bg-white/10 transition-colors ${showTimeEditor ? 'text-pink-cyan bg-white/10' : 'text-slate-400'}`}
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     setShowTimeEditor(!showTimeEditor);
                                 }}
                                 title="Edit protection time"
+                                aria-label="Edit protection time"
                             >
                                 <Clock size={14 * zoom} />
                             </button>
@@ -265,8 +300,9 @@ const BuildingCard = forwardRef<HTMLDivElement, BuildingCardProps>(
                                 setShowNotes(!showNotes);
                             }}
                             title="Notes"
+                            aria-label="Toggle notes"
                         >
-                            <MessageSquare size={14 * zoom} className={building.notes ? 'text-blue-400' : 'text-gray-400'} />
+                            <MessageSquare size={14 * zoom} className={building.notes ? 'text-pink-cyan' : 'text-slate-400'} />
                         </button>
                         <button
                             className="p-1.5 rounded hover:bg-white/10 transition-colors"
@@ -275,23 +311,25 @@ const BuildingCard = forwardRef<HTMLDivElement, BuildingCardProps>(
                                 onSelect();
                             }}
                             title="Locate on map"
+                            aria-label="Locate on map"
                         >
-                            <MapPin size={14 * zoom} className="text-gray-400" />
+                            <MapPin size={14 * zoom} className="text-slate-400" />
                         </button>
                     </div>
                 </div>
 
                 {/* Notes Section (expandable) */}
                 {showNotes && (
-                    <div className="mt-2 pt-2 border-t border-white/10">
+                    <div className="mt-2 pt-2 border-t border-cloud/10">
                         <textarea
-                            className="w-full bg-white/5 border border-white/10 rounded p-2 text-sm resize-none focus:outline-none focus:border-blue-500/50"
+                            className="w-full bg-black/20 border border-cloud/10 rounded p-2 text-sm resize-none focus:outline-none focus:border-pink-cyan/50 text-slate-200 placeholder-slate-500"
                             placeholder="Add notes..."
                             value={building.notes}
                             onChange={(e) => onUpdate({ notes: e.target.value })}
                             onClick={(e) => e.stopPropagation()}
                             rows={2}
                             style={{ fontSize: `${0.8 * zoom}rem` }}
+                            aria-label="Notes"
                         />
                     </div>
                 )}

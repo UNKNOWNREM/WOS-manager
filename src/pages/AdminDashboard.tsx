@@ -13,7 +13,9 @@ import {
     FileUp,
     Upload,
     Clock,
-    Users
+    Users,
+    Database,
+    Trash2
 } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { INITIAL_REWARDS, RewardConfig, RewardCycle, REWARD_CYCLES, getReward } from '../data/rewards';
@@ -22,15 +24,16 @@ import { BuildingReward, BuildingType } from '../types/Building';
 import { REWARD_ICONS } from '../data/assets';
 import { LanguageSwitcher } from '../components/common/LanguageSwitcher';
 import { Header } from '../components/common/Header';
+import { Footer } from '../components/common/Footer';
 import { FacilityControl } from '../components/admin/FacilityControl';
 import { AllianceManagement } from '../components/admin/AllianceManagement';
 import { Building } from '../types/Building';
 
 export default function AdminDashboard() {
-    const [activeTab, setActiveTab] = useState<'rewards' | 'facility' | 'alliance'>('rewards');
+    const [activeTab, setActiveTab] = useState<'rewards' | 'facility' | 'alliance' | 'settings'>('rewards');
     const [currentCycle, setCurrentCycle] = useLocalStorage<RewardCycle>('currentCycle', 1);
-    const [rewards, setRewards] = useLocalStorage<RewardConfig>('rewards_config_v2', INITIAL_REWARDS);
-    const [buildings, setBuildings] = useLocalStorage<Building[]>('buildings_v4', []);
+    const [rewards, setRewards] = useLocalStorage<RewardConfig>('rewards_config', INITIAL_REWARDS);
+    const [buildings, setBuildings] = useLocalStorage<Building[]>('buildings', []);
 
     // Notifications state
     const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
@@ -105,17 +108,36 @@ export default function AdminDashboard() {
         ));
     };
 
+    const handleClearData = (key: string, label: string) => {
+        if (confirm(`Are you sure you want to clear all ${label} data? This cannot be undone.`)) {
+            localStorage.removeItem(key);
+            showNotification(`${label} data cleared. Please refresh the page.`);
+            // Force reload to reset state properly
+            setTimeout(() => window.location.reload(), 1500);
+        }
+    };
+
+    const handleClearAllData = () => {
+        if (confirm('WARNING: THIS WILL WIPE ALL DATA INCLUDING CUSTOM BUILDINGS, SETTINGS, AND ALLIANCES.\n\nAre you sure you want to proceed?')) {
+            if (confirm('Double check: This action is irreversible. Do you really want to reset the entire application?')) {
+                localStorage.clear();
+                showNotification('All data wiped. Application will reload.');
+                setTimeout(() => window.location.reload(), 1500);
+            }
+        }
+    };
+
     return (
-        <div className="min-h-screen bg-slate-900 text-slate-100 font-sans">
+        <div className="min-h-screen text-slate-100 font-sans">
             {/* Header */}
             <Header
                 title="WOS Manager Admin"
                 subtitle="Map Configuration Dashboard"
-                icon={<Settings size={24} />}
+                icon={<Settings size={24} className="text-pink-cyan" />}
                 actions={
                     <>
                         <LanguageSwitcher />
-                        <div className="flex items-center gap-2 bg-slate-700/50 px-3 py-1.5 rounded-lg border border-slate-600">
+                        <div className="flex items-center gap-2 bg-slate-900/50 px-3 py-1.5 rounded-lg border border-slate-700">
                             <span className="text-sm text-slate-300 whitespace-nowrap">Global Map Cycle:</span>
                             <select
                                 value={currentCycle}
@@ -123,10 +145,11 @@ export default function AdminDashboard() {
                                     setCurrentCycle(Number(e.target.value) as RewardCycle);
                                     showNotification(`Global cycle updated to Week ${e.target.value}`);
                                 }}
-                                className="bg-slate-900 text-white text-sm rounded px-2 py-1 border border-slate-600 focus:outline-none focus:border-indigo-500"
+                                className="bg-transparent text-white text-sm focus:outline-none cursor-pointer"
+                                aria-label="Select Global Cycle"
                             >
                                 {REWARD_CYCLES.map(c => (
-                                    <option key={c} value={c}>Week {c}</option>
+                                    <option key={c} value={c} className="bg-slate-900">Week {c}</option>
                                 ))}
                             </select>
                         </div>
@@ -134,7 +157,8 @@ export default function AdminDashboard() {
                         <a
                             href="/map.html"
                             target="_blank"
-                            className="flex items-center gap-2 px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors text-sm whitespace-nowrap text-slate-200"
+                            className="flex items-center gap-2 px-3 py-2 bg-grad-smoke-light hover:brightness-110 rounded-lg transition-all shadow-lg hover:shadow-smoke-light/50 text-sm whitespace-nowrap text-white"
+                            aria-label="Open Map in new tab"
                         >
                             <Building2 size={16} />
                             Open Map
@@ -151,9 +175,10 @@ export default function AdminDashboard() {
                     <button
                         onClick={() => setActiveTab('rewards')}
                         className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors whitespace-nowrap ${activeTab === 'rewards'
-                            ? 'border-indigo-500 text-indigo-400'
+                            ? 'border-pink-cyan text-pink-cyan'
                             : 'border-transparent text-slate-400 hover:text-slate-200'
                             }`}
+                        aria-label="Switch to Reward Management"
                     >
                         <LayoutDashboard size={18} />
                         Reward Management
@@ -161,9 +186,10 @@ export default function AdminDashboard() {
                     <button
                         onClick={() => setActiveTab('facility')}
                         className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors whitespace-nowrap ${activeTab === 'facility'
-                            ? 'border-indigo-500 text-indigo-400'
+                            ? 'border-pink-cyan text-pink-cyan'
                             : 'border-transparent text-slate-400 hover:text-slate-200'
                             }`}
+                        aria-label="Switch to Facility Control"
                     >
                         <Clock size={18} />
                         Facility Control
@@ -171,12 +197,24 @@ export default function AdminDashboard() {
                     <button
                         onClick={() => setActiveTab('alliance')}
                         className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors whitespace-nowrap ${activeTab === 'alliance'
-                            ? 'border-indigo-500 text-indigo-400'
+                            ? 'border-pink-cyan text-pink-cyan'
                             : 'border-transparent text-slate-400 hover:text-slate-200'
                             }`}
+                        aria-label="Switch to Alliance Management"
                     >
                         <Users size={18} />
                         Alliance Management
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('settings')}
+                        className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors whitespace-nowrap ${activeTab === 'settings'
+                            ? 'border-pink-cyan text-pink-cyan'
+                            : 'border-transparent text-slate-400 hover:text-slate-200'
+                            }`}
+                        aria-label="Switch to System Settings"
+                    >
+                        <Settings size={18} />
+                        System Settings
                     </button>
                     {/* Placeholder for future tab
                     <button
@@ -207,12 +245,12 @@ export default function AdminDashboard() {
                     <div className="space-y-8">
 
                         <div className="flex items-center justify-between">
-                            <h2 className="text-xl font-semibold flex items-center gap-2">
-                                <ImageIcon size={20} className="text-indigo-400" />
+                            <h2 className="text-xl font-semibold flex items-center gap-2 text-pink-cyan">
+                                <ImageIcon size={20} />
                                 Reward Configuration
                             </h2>
                             <div className="flex items-center gap-2">
-                                <label className="flex items-center gap-2 px-3 py-1.5 text-xs text-indigo-400 hover:bg-indigo-900/20 rounded border border-indigo-900/50 transition-colors cursor-pointer">
+                                <label className="flex items-center gap-2 px-3 py-1.5 text-xs text-pink-cyan hover:bg-pink-cyan/10 rounded border border-pink-cyan/30 transition-colors cursor-pointer">
                                     <FileUp size={12} />
                                     Import JSON
                                     <input
@@ -224,14 +262,14 @@ export default function AdminDashboard() {
                                 </label>
                                 <button
                                     onClick={handleExportConfig}
-                                    className="flex items-center gap-2 px-3 py-1.5 text-xs text-indigo-400 hover:bg-indigo-900/20 rounded border border-indigo-900/50 transition-colors"
+                                    className="flex items-center gap-2 px-3 py-1.5 text-xs text-pink-cyan hover:bg-pink-cyan/10 rounded border border-pink-cyan/30 transition-colors"
                                 >
                                     <FileDown size={12} />
                                     Export JSON
                                 </button>
                                 <button
                                     onClick={handleResetRewards}
-                                    className="flex items-center gap-2 px-3 py-1.5 text-xs text-red-400 hover:bg-red-900/20 rounded border border-red-900/50 transition-colors"
+                                    className="flex items-center gap-2 px-3 py-1.5 text-xs text-red-300 hover:bg-red-900/20 rounded border border-red-900/50 transition-colors"
                                 >
                                     <RefreshCw size={12} />
                                     Reset to Default
@@ -240,18 +278,18 @@ export default function AdminDashboard() {
                         </div>
 
                         {/* Strongholds Section */}
-                        <div className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
-                            <div className="p-4 bg-slate-800/50 border-b border-slate-700 flex items-center gap-2">
-                                <Shield size={18} className="text-purple-400" />
-                                <h3 className="font-semibold text-purple-200">Strongholds</h3>
+                        <div className="glass-panel rounded-xl overflow-hidden border border-cloud/10">
+                            <div className="p-4 bg-slate-900/40 border-b border-cloud/10 flex items-center gap-2">
+                                <Shield size={18} className="text-purple-gauze" />
+                                <h3 className="font-semibold text-purple-gauze">Strongholds</h3>
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm text-left">
-                                    <thead className="bg-slate-900/50 text-slate-400 uppercase text-xs">
+                                    <thead className="bg-slate-900/60 text-slate-400 uppercase text-xs">
                                         <tr>
-                                            <th className="px-4 py-3 sticky left-0 bg-slate-900 z-10 w-24">ID</th>
+                                            <th className="px-4 py-3 sticky left-0 bg-slate-900 z-10 w-24 border-r border-slate-800">ID</th>
                                             {REWARD_CYCLES.map(c => (
-                                                <th key={c} className={`px-4 py-3 min-w-[220px] ${currentCycle === c ? 'bg-indigo-900/20 text-indigo-300 border-b-2 border-indigo-500' : ''}`}>
+                                                <th key={c} className={`px-4 py-3 min-w-[220px] ${currentCycle === c ? 'bg-indigo-900/40 text-pink-cyan border-b-2 border-pink-cyan' : ''}`}>
                                                     Week {c}
                                                 </th>
                                             ))}
@@ -279,18 +317,18 @@ export default function AdminDashboard() {
                         </div>
 
                         {/* Fortresses Section */}
-                        <div className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
-                            <div className="p-4 bg-slate-800/50 border-b border-slate-700 flex items-center gap-2">
+                        <div className="glass-panel rounded-xl overflow-hidden border border-cloud/10">
+                            <div className="p-4 bg-slate-900/40 border-b border-cloud/10 flex items-center gap-2">
                                 <Castle size={18} className="text-red-400" />
-                                <h3 className="font-semibold text-red-200">Fortresses</h3>
+                                <h3 className="font-semibold text-red-300">Fortresses</h3>
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm text-left">
-                                    <thead className="bg-slate-900/50 text-slate-400 uppercase text-xs">
+                                    <thead className="bg-slate-900/60 text-slate-400 uppercase text-xs">
                                         <tr>
-                                            <th className="px-4 py-3 sticky left-0 bg-slate-900 z-10 w-24">ID</th>
+                                            <th className="px-4 py-3 sticky left-0 bg-slate-900 z-10 w-24 border-r border-slate-800">ID</th>
                                             {REWARD_CYCLES.map(c => (
-                                                <th key={c} className={`px-4 py-3 min-w-[220px] ${currentCycle === c ? 'bg-indigo-900/20 text-indigo-300 border-b-2 border-indigo-500' : ''}`}>
+                                                <th key={c} className={`px-4 py-3 min-w-[220px] ${currentCycle === c ? 'bg-indigo-900/40 text-pink-cyan border-b-2 border-pink-cyan' : ''}`}>
                                                     Week {c}
                                                 </th>
                                             ))}
@@ -332,7 +370,106 @@ export default function AdminDashboard() {
                 {activeTab === 'alliance' && (
                     <AllianceManagement />
                 )}
+
+                {activeTab === 'settings' && (
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-xl font-semibold flex items-center gap-2 text-pink-cyan">
+                                <Database size={20} />
+                                System Settings & Data Management
+                            </h2>
+                        </div>
+
+                        {/* Danger Zone */}
+                        <div className="glass-panel border-red-900/30 rounded-xl overflow-hidden">
+                            <div className="p-4 bg-red-950/20 border-b border-red-900/20 flex items-center gap-2">
+                                <Trash2 size={18} className="text-red-400" />
+                                <h3 className="font-semibold text-red-300">Danger Zone</h3>
+                            </div>
+                            <div className="p-6 space-y-6">
+                                <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/5">
+                                    <div>
+                                        <h4 className="font-medium text-slate-200">Clear All Data</h4>
+                                        <p className="text-sm text-slate-400 mt-1">
+                                            Completely wipe all local storage data, including custom buildings, rewards, alliances, and settings.
+                                            The application will be reset to its initial state.
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={handleClearAllData}
+                                        className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm font-medium"
+                                    >
+                                        Reset Application
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="p-4 bg-white/5 rounded-lg border border-white/5 flex items-center justify-between">
+                                        <div>
+                                            <h4 className="font-medium text-slate-200">Reset Buildings</h4>
+                                            <p className="text-xs text-slate-400 mt-1">Reverts all buildings to default.</p>
+                                        </div>
+                                        <button
+                                            onClick={() => handleClearData('buildings', 'Buildings')}
+                                            className="px-3 py-1.5 bg-slate-700 hover:bg-red-900/50 text-slate-200 hover:text-red-200 border border-slate-600 hover:border-red-800 rounded transition-all text-sm"
+                                        >
+                                            Reset
+                                        </button>
+                                    </div>
+
+                                    <div className="p-4 bg-white/5 rounded-lg border border-white/5 flex items-center justify-between">
+                                        <div>
+                                            <h4 className="font-medium text-slate-200">Reset Rewards</h4>
+                                            <p className="text-xs text-slate-400 mt-1">Reverts reward config to default.</p>
+                                        </div>
+                                        <button
+                                            onClick={() => handleClearData('rewards_config', 'Rewards')}
+                                            className="px-3 py-1.5 bg-slate-700 hover:bg-red-900/50 text-slate-200 hover:text-red-200 border border-slate-600 hover:border-red-800 rounded transition-all text-sm"
+                                        >
+                                            Reset
+                                        </button>
+                                    </div>
+
+                                    <div className="p-4 bg-white/5 rounded-lg border border-white/5 flex items-center justify-between">
+                                        <div>
+                                            <h4 className="font-medium text-slate-200">Reset Alliances</h4>
+                                            <p className="text-xs text-slate-400 mt-1">Clears all custom alliances.</p>
+                                        </div>
+                                        <button
+                                            onClick={() => handleClearData('alliance_config', 'Alliance')}
+                                            className="px-3 py-1.5 bg-slate-700 hover:bg-red-900/50 text-slate-200 hover:text-red-200 border border-slate-600 hover:border-red-800 rounded transition-all text-sm"
+                                        >
+                                            Reset
+                                        </button>
+                                    </div>
+
+                                    <div className="p-4 bg-white/5 rounded-lg border border-white/5 flex items-center justify-between">
+                                        <div>
+                                            <h4 className="font-medium text-slate-200">Reset Preferences</h4>
+                                            <p className="text-xs text-slate-400 mt-1">Clears UI settings (zoom, sort, etc).</p>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                localStorage.removeItem('leftPanelCollapsed');
+                                                localStorage.removeItem('leftPanelZoom');
+                                                localStorage.removeItem('autoSort');
+                                                localStorage.removeItem('currentCycle');
+                                                showNotification('UI Preferences reset.');
+                                                setTimeout(() => window.location.reload(), 1000);
+                                            }}
+                                            className="px-3 py-1.5 bg-slate-700 hover:bg-red-900/50 text-slate-200 hover:text-red-200 border border-slate-600 hover:border-red-800 rounded transition-all text-sm"
+                                        >
+                                            Reset
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </main>
+
+            <Footer />
         </div>
     );
 }

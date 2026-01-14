@@ -1,14 +1,16 @@
-import { Building } from '../../types/Building';
+import { Building, ALLIANCE_NAMES } from '../../types/Building';
+import { AllianceConfig } from '../../types/Alliance';
 import { CountdownTimer } from '../common/CountdownTimer';
 import { TimeEditor } from '../common/TimeEditor';
 
 interface FacilityCardProps {
     building: Building;
+    allianceConfig?: AllianceConfig;
     onUpdate: (buildingId: string, updates: Partial<Building>) => void;
     onClick?: () => void;
 }
 
-export function FacilityCard({ building, onUpdate, onClick }: FacilityCardProps) {
+export function FacilityCard({ building, allianceConfig, onUpdate, onClick }: FacilityCardProps) {
     const handleAllianceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         onUpdate(building.id, { alliance: e.target.value as any });
     };
@@ -48,11 +50,18 @@ export function FacilityCard({ building, onUpdate, onClick }: FacilityCardProps)
                     className="w-full px-2 py-1.5 bg-slate-900 border border-slate-600 rounded text-sm focus:outline-none focus:border-blue-500"
                 >
                     <option value="unassigned">Unassigned</option>
-                    <option value="allianceA">Alliance A</option>
-                    <option value="allianceB">Alliance B</option>
-                    <option value="allianceC">Alliance C</option>
-                    <option value="allianceD">Alliance D</option>
-                    <option value="allianceE">Alliance E</option>
+                    {allianceConfig
+                        ? Object.values(allianceConfig).map((alliance) => (
+                            <option key={alliance.id} value={alliance.id}>
+                                {alliance.name}
+                            </option>
+                        ))
+                        : Object.entries(ALLIANCE_NAMES).map(([key, name]) => (
+                            <option key={key} value={key}>
+                                {name}
+                            </option>
+                        ))
+                    }
                 </select>
             </div>
 

@@ -1,7 +1,7 @@
 // Building Types and Interfaces for WOS Building Manager
 
-// Alliance type - 6 possible values
-export type Alliance = 'unassigned' | 'allianceA' | 'allianceB' | 'allianceC' | 'allianceD' | 'allianceE';
+// Alliance type - dynamic string IDs (default: unassigned, allianceA-E)
+export type Alliance = string;
 
 // Building status - calculated based on time
 export type BuildingStatus = 'protected' | 'opening' | 'soon' | 'closing' | 'contested';

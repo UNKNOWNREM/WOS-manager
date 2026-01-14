@@ -161,14 +161,14 @@ export const GroupTable: React.FC<GroupTableProps> = ({
   };
 
   return (
-    <div className="flex-1 overflow-auto max-h-[500px] custom-scrollbar">
+    <div className="flex-1 overflow-auto max-h-[500px] lg:max-h-full h-full custom-scrollbar">
       <table className="w-full text-left text-sm text-white border-collapse">
         <thead className="sticky top-0 z-10 backdrop-blur-xl bg-gray-900/90 shadow-sm">
-          <tr className="bg-teal-900/60 border-b border-teal-500/20">
+          <tr className="bg-slate-800/80 border-b border-slate-700/50">
             {/* Sort Handle Header */}
-            <th className="p-3 w-10 text-center text-teal-200/50"></th>
-            <th className="p-3 w-10 text-center text-teal-200/50">#</th>
-            <th className="p-3 font-semibold min-w-[240px] text-teal-100">Player</th>
+            <th className="p-3 w-10 text-center text-slate-500"></th>
+            <th className="p-3 w-10 text-center text-slate-500">#</th>
+            <th className="p-3 font-semibold min-w-[240px] text-slate-200">Player</th>
 
             {/* Draggable Columns */}
             {group.columns.map((col, index) => (
@@ -194,7 +194,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({
                       type="button"
                       onMouseDown={(e) => e.stopPropagation()}
                       onClick={() => onRenameColumn(col.id, col.name)}
-                      className="text-teal-400/50 hover:text-teal-200 p-1 rounded hover:bg-teal-900/50"
+                      className="text-teal-300 hover:text-teal-100 p-1 rounded hover:bg-teal-900/50 transition-colors"
                     >
                       <Pencil size={12} />
                     </button>

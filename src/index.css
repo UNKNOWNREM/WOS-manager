@@ -13,8 +13,8 @@ html {
 }
 
 body {
-    /* Deep dark gradient background */
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    /* Deep dark 3-stop vertical gradient (Grey Moon -> Smoke Light -> Smoke Coagulate) */
+    background: linear-gradient(to bottom, #1C4366, #254972, #3C5662);
     min-height: 100vh;
     color: #f1f5f9;
     font-family: 'Inter', sans-serif;
@@ -25,49 +25,44 @@ body {
 
 /* Glass panel utility */
 .glass-panel {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    background: rgba(23, 41, 76, 0.4);
+    /* Star Frost / Mountain Mist mix */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(241, 240, 241, 0.15);
+    /* Cloud border */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
 }
 
-.glass-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: all 0.2s ease;
-}
 
-.glass-card:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.15);
-}
-
-.glass-card.selected {
-    border-color: #fbbf24;
-    animation: selected-pulse 2s infinite ease-in-out;
-}
 
 /* Custom Scrollbar */
+/* Custom Scrollbar - Global WebKit */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(59, 130, 246, 0.4);
+    background: rgba(20, 184, 166, 0.5);
+    /* Teal-500/50 */
     border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(59, 130, 246, 0.6);
+    background: rgba(20, 184, 166, 0.8);
+    /* Teal-500/80 */
+}
+
+/* Firefox Support & Utility Class */
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(20, 184, 166, 0.5) rgba(0, 0, 0, 0.2);
 }
 
 /* Animation keyframes */

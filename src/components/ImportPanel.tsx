@@ -272,11 +272,7 @@ export const ImportPanel: React.FC<ImportPanelProps> = ({ foundPlayers, setFound
           )}
         </div>
         <div
-          className="flex-1 overflow-y-auto max-h-[400px] p-2 lg:p-3 space-y-2 custom-scrollbar"
-          style={{
-            scrollbarWidth: 'thin',
-            scrollbarColor: 'rgba(20, 184, 166, 0.5) rgba(0, 0, 0, 0.2)'
-          }}
+          className="flex-1 overflow-y-auto max-h-[500px] lg:max-h-full p-2 lg:p-3 space-y-2 custom-scrollbar"
         >
           {foundPlayers.length === 0 && (
             <div className="text-center text-white/30 py-8 text-sm">
