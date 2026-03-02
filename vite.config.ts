@@ -9,6 +9,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'src/pages/index/index.html'),
+        admin: resolve(__dirname, 'src/pages/admin/admin.html'),
+        map: resolve(__dirname, 'src/pages/map/map.html'),
         ranks: resolve(__dirname, 'src/pages/ranks/ranks.html'),
       },
       output: {
@@ -25,6 +27,11 @@ export default defineConfig({
     }
   },
   server: {
+    allowedHosts: [
+      '.ngrok-free.app',
+      'localhost',
+      '127.0.0.1'
+    ],
     proxy: {
       '/api': {
         target: 'https://wos-giftcode-api.centurygame.com',

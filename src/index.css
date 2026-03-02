@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+}
+
+html {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+body {
+    /* Deep dark 3-stop vertical gradient (Grey Moon -> Smoke Light -> Smoke Coagulate) */
+    background: linear-gradient(to bottom, #1C4366, #254972, #3C5662);
+    min-height: 100vh;
+    color: #f1f5f9;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+}
+
+/* Glass panel utility */
+.glass-panel {
+    background: rgba(23, 41, 76, 0.4);
+    /* Star Frost / Mountain Mist mix */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(241, 240, 241, 0.15);
+    /* Cloud border */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+
+
+/* Custom Scrollbar */
+/* Custom Scrollbar - Global WebKit */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(20, 184, 166, 0.5);
+    /* Teal-500/50 */
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(20, 184, 166, 0.8);
+    /* Teal-500/80 */
+}
+
+/* Firefox Support & Utility Class */
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(20, 184, 166, 0.5) rgba(0, 0, 0, 0.2);
+}
+
+/* Animation keyframes */
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+}
+
+@keyframes shield-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.8);
+    }
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.status-protected {
+    animation: shield-glow 2s infinite ease-in-out;
+}
+
+.status-opening {
+    animation: pulse 2s infinite ease-in-out;
+}
+
+.status-soon {
+    animation: blink 1s infinite;
+}
+
+/* Transition utilities */
+.panel-transition {
+    transition: width 0.3s ease, opacity 0.2s ease;
+}
+
+@keyframes selected-pulse {
+    0% {
+        box-shadow: 0 0 0 0px rgba(251, 191, 36, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.1);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0px rgba(251, 191, 36, 0.4);
+    }
+}
+
+/* Badge styles */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 9999px;
+}

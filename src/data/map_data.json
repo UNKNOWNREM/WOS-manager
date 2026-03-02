@@ -1,0 +1,650 @@
+{
+  "map_info": {
+    "size": 1200,
+    "center": [
+      597,
+      597
+    ],
+    "coordinate_system": "bottom-left origin (0,0)",
+    "ruins_area": {
+      "min_x": 87,
+      "max_x": 1139,
+      "min_y": 87,
+      "max_y": 1139
+    }
+  },
+  "sun_city": {
+    "id": 1,
+    "x": 597,
+    "y": 597,
+    "type": "sun_city",
+    "name": "太陽城"
+  },
+  "fortresses": [
+    {
+      "id": 1,
+      "x": 237,
+      "y": 820,
+      "type": "fortress"
+    },
+    {
+      "id": 2,
+      "x": 237,
+      "y": 606,
+      "type": "fortress"
+    },
+    {
+      "id": 3,
+      "x": 237,
+      "y": 348,
+      "type": "fortress"
+    },
+    {
+      "id": 4,
+      "x": 366,
+      "y": 237,
+      "type": "fortress"
+    },
+    {
+      "id": 5,
+      "x": 588,
+      "y": 237,
+      "type": "fortress"
+    },
+    {
+      "id": 6,
+      "x": 846,
+      "y": 237,
+      "type": "fortress"
+    },
+    {
+      "id": 7,
+      "x": 957,
+      "y": 348,
+      "type": "fortress"
+    },
+    {
+      "id": 8,
+      "x": 957,
+      "y": 606,
+      "type": "fortress"
+    },
+    {
+      "id": 9,
+      "x": 957,
+      "y": 828,
+      "type": "fortress"
+    },
+    {
+      "id": 10,
+      "x": 846,
+      "y": 957,
+      "type": "fortress"
+    },
+    {
+      "id": 11,
+      "x": 606,
+      "y": 957,
+      "type": "fortress"
+    },
+    {
+      "id": 12,
+      "x": 366,
+      "y": 957,
+      "type": "fortress"
+    }
+  ],
+  "strongholds": [
+    {
+      "id": 1,
+      "x": 597,
+      "y": 800,
+      "type": "stronghold"
+    },
+    {
+      "id": 2,
+      "x": 400,
+      "y": 597,
+      "type": "stronghold"
+    },
+    {
+      "id": 3,
+      "x": 597,
+      "y": 400,
+      "type": "stronghold"
+    },
+    {
+      "id": 4,
+      "x": 800,
+      "y": 597,
+      "type": "stronghold"
+    }
+  ],
+  "engineering_stations": [
+    {
+      "id": 1,
+      "x": 1068,
+      "y": 1068,
+      "type": "engineering_station",
+      "name": "建設設施"
+    },
+    {
+      "id": 2,
+      "x": 957,
+      "y": 1068,
+      "type": "engineering_station",
+      "name": "生產設施"
+    },
+    {
+      "id": 3,
+      "x": 867,
+      "y": 1068,
+      "type": "engineering_station",
+      "name": "武器設施"
+    },
+    {
+      "id": 4,
+      "x": 666,
+      "y": 1068,
+      "type": "engineering_station",
+      "name": "建設設施"
+    },
+    {
+      "id": 5,
+      "x": 438,
+      "y": 1068,
+      "type": "engineering_station",
+      "name": "採集設施"
+    },
+    {
+      "id": 6,
+      "x": 267,
+      "y": 1068,
+      "type": "engineering_station",
+      "name": "建設設施"
+    },
+    {
+      "id": 7,
+      "x": 768,
+      "y": 1038,
+      "type": "engineering_station",
+      "name": "訓練設施"
+    },
+    {
+      "id": 8,
+      "x": 537,
+      "y": 1038,
+      "type": "engineering_station",
+      "name": "武器設施"
+    },
+    {
+      "id": 9,
+      "x": 327,
+      "y": 1038,
+      "type": "engineering_station",
+      "name": "採集設施"
+    },
+    {
+      "id": 10,
+      "x": 237,
+      "y": 1038,
+      "type": "engineering_station",
+      "name": "建設設施"
+    },
+    {
+      "id": 11,
+      "x": 138,
+      "y": 1038,
+      "type": "engineering_station",
+      "name": "建設設施"
+    },
+    {
+      "id": 12,
+      "x": 1068,
+      "y": 936,
+      "type": "engineering_station",
+      "name": "採集設施"
+    },
+    {
+      "id": 13,
+      "x": 537,
+      "y": 936,
+      "type": "engineering_station",
+      "name": "科技設施"
+    },
+    {
+      "id": 14,
+      "x": 957,
+      "y": 957,
+      "type": "engineering_station",
+      "name": "科技設施"
+    },
+    {
+      "id": 15,
+      "x": 738,
+      "y": 957,
+      "type": "engineering_station",
+      "name": "防禦設施"
+    },
+    {
+      "id": 16,
+      "x": 486,
+      "y": 957,
+      "type": "engineering_station",
+      "name": "生產設施"
+    },
+    {
+      "id": 17,
+      "x": 237,
+      "y": 957,
+      "type": "engineering_station",
+      "name": "科技設施"
+    },
+    {
+      "id": 18,
+      "x": 138,
+      "y": 957,
+      "type": "engineering_station",
+      "name": "生產設施"
+    },
+    {
+      "id": 19,
+      "x": 867,
+      "y": 867,
+      "type": "engineering_station",
+      "name": "科技設施"
+    },
+    {
+      "id": 20,
+      "x": 768,
+      "y": 867,
+      "type": "engineering_station",
+      "name": "科技設施"
+    },
+    {
+      "id": 21,
+      "x": 588,
+      "y": 867,
+      "type": "engineering_station",
+      "name": "武器設施"
+    },
+    {
+      "id": 22,
+      "x": 486,
+      "y": 867,
+      "type": "engineering_station",
+      "name": "生產設施"
+    },
+    {
+      "id": 23,
+      "x": 327,
+      "y": 867,
+      "type": "engineering_station",
+      "name": "遠征設施"
+    },
+    {
+      "id": 24,
+      "x": 138,
+      "y": 867,
+      "type": "engineering_station",
+      "name": "武器設施"
+    },
+    {
+      "id": 25,
+      "x": 1068,
+      "y": 747,
+      "type": "engineering_station",
+      "name": "生產設施"
+    },
+    {
+      "id": 26,
+      "x": 957,
+      "y": 747,
+      "type": "engineering_station",
+      "name": "防禦設施"
+    },
+    {
+      "id": 27,
+      "x": 138,
+      "y": 747,
+      "type": "engineering_station",
+      "name": "訓練設施"
+    },
+    {
+      "id": 28,
+      "x": 816,
+      "y": 717,
+      "type": "engineering_station",
+      "name": "防禦設施"
+    },
+    {
+      "id": 29,
+      "x": 387,
+      "y": 717,
+      "type": "engineering_station",
+      "name": "採集設施"
+    },
+    {
+      "id": 30,
+      "x": 1068,
+      "y": 666,
+      "type": "engineering_station",
+      "name": "防禦設施"
+    },
+    {
+      "id": 31,
+      "x": 867,
+      "y": 666,
+      "type": "engineering_station",
+      "name": "訓練設施"
+    },
+    {
+      "id": 32,
+      "x": 327,
+      "y": 666,
+      "type": "engineering_station",
+      "name": "武器設施"
+    },
+    {
+      "id": 33,
+      "x": 138,
+      "y": 666,
+      "type": "engineering_station",
+      "name": "科技設施"
+    },
+    {
+      "id": 34,
+      "x": 87,
+      "y": 666,
+      "type": "engineering_station",
+      "name": "武器設施"
+    },
+    {
+      "id": 35,
+      "x": 1137,
+      "y": 567,
+      "type": "engineering_station",
+      "name": "採集設施"
+    },
+    {
+      "id": 36,
+      "x": 1068,
+      "y": 567,
+      "type": "engineering_station",
+      "name": "建設設施"
+    },
+    {
+      "id": 37,
+      "x": 867,
+      "y": 567,
+      "type": "engineering_station",
+      "name": "科技設施"
+    },
+    {
+      "id": 38,
+      "x": 327,
+      "y": 587,
+      "type": "engineering_station",
+      "name": "科技設施"
+    },
+    {
+      "id": 39,
+      "x": 936,
+      "y": 537,
+      "type": "engineering_station",
+      "name": "建設設施"
+    },
+    {
+      "id": 40,
+      "x": 267,
+      "y": 537,
+      "type": "engineering_station",
+      "name": "建設設施"
+    },
+    {
+      "id": 41,
+      "x": 138,
+      "y": 537,
+      "type": "engineering_station",
+      "name": "防禦設施"
+    },
+    {
+      "id": 42,
+      "x": 1068,
+      "y": 486,
+      "type": "engineering_station",
+      "name": "訓練設施"
+    },
+    {
+      "id": 43,
+      "x": 816,
+      "y": 486,
+      "type": "engineering_station",
+      "name": "生產設施"
+    },
+    {
+      "id": 44,
+      "x": 387,
+      "y": 486,
+      "type": "engineering_station",
+      "name": "採集設施"
+    },
+    {
+      "id": 45,
+      "x": 237,
+      "y": 486,
+      "type": "engineering_station",
+      "name": "科技設施"
+    },
+    {
+      "id": 46,
+      "x": 957,
+      "y": 438,
+      "type": "engineering_station",
+      "name": "防禦設施"
+    },
+    {
+      "id": 47,
+      "x": 138,
+      "y": 438,
+      "type": "engineering_station",
+      "name": "訓練設施"
+    },
+    {
+      "id": 48,
+      "x": 1068,
+      "y": 327,
+      "type": "engineering_station",
+      "name": "生產設施"
+    },
+    {
+      "id": 49,
+      "x": 867,
+      "y": 327,
+      "type": "engineering_station",
+      "name": "科技設施"
+    },
+    {
+      "id": 50,
+      "x": 768,
+      "y": 327,
+      "type": "engineering_station",
+      "name": "遠征設施"
+    },
+    {
+      "id": 51,
+      "x": 588,
+      "y": 327,
+      "type": "engineering_station",
+      "name": "防禦設施"
+    },
+    {
+      "id": 52,
+      "x": 486,
+      "y": 327,
+      "type": "engineering_station",
+      "name": "生產設施"
+    },
+    {
+      "id": 53,
+      "x": 327,
+      "y": 327,
+      "type": "engineering_station",
+      "name": "建設設施"
+    },
+    {
+      "id": 54,
+      "x": 138,
+      "y": 327,
+      "type": "engineering_station",
+      "name": "生產設施"
+    },
+    {
+      "id": 55,
+      "x": 666,
+      "y": 267,
+      "type": "engineering_station",
+      "name": "科技設施"
+    },
+    {
+      "id": 56,
+      "x": 438,
+      "y": 267,
+      "type": "engineering_station",
+      "name": "防禦設施"
+    },
+    {
+      "id": 57,
+      "x": 1068,
+      "y": 237,
+      "type": "engineering_station",
+      "name": "生產設施"
+    },
+    {
+      "id": 58,
+      "x": 957,
+      "y": 237,
+      "type": "engineering_station",
+      "name": "防禦設施"
+    },
+    {
+      "id": 59,
+      "x": 768,
+      "y": 237,
+      "type": "engineering_station",
+      "name": "科技設施"
+    },
+    {
+      "id": 60,
+      "x": 237,
+      "y": 237,
+      "type": "engineering_station",
+      "name": "科技設施"
+    },
+    {
+      "id": 61,
+      "x": 138,
+      "y": 237,
+      "type": "engineering_station",
+      "name": "採集設施"
+    },
+    {
+      "id": 62,
+      "x": 1068,
+      "y": 138,
+      "type": "engineering_station",
+      "name": "建設設施"
+    },
+    {
+      "id": 63,
+      "x": 957,
+      "y": 138,
+      "type": "engineering_station",
+      "name": "遠征設施"
+    },
+    {
+      "id": 64,
+      "x": 867,
+      "y": 138,
+      "type": "engineering_station",
+      "name": "建設設施"
+    },
+    {
+      "id": 65,
+      "x": 768,
+      "y": 138,
+      "type": "engineering_station",
+      "name": "生產設施"
+    },
+    {
+      "id": 66,
+      "x": 666,
+      "y": 138,
+      "type": "engineering_station",
+      "name": "防禦設施"
+    },
+    {
+      "id": 67,
+      "x": 537,
+      "y": 138,
+      "type": "engineering_station",
+      "name": "武器設施"
+    },
+    {
+      "id": 68,
+      "x": 486,
+      "y": 138,
+      "type": "engineering_station",
+      "name": "科技設施"
+    },
+    {
+      "id": 69,
+      "x": 366,
+      "y": 138,
+      "type": "engineering_station",
+      "name": "武器設施"
+    },
+    {
+      "id": 70,
+      "x": 237,
+      "y": 138,
+      "type": "engineering_station",
+      "name": "科技設施"
+    },
+    {
+      "id": 71,
+      "x": 138,
+      "y": 138,
+      "type": "engineering_station",
+      "name": "生產設施"
+    },
+    {
+      "id": 72,
+      "x": 636,
+      "y": 1137,
+      "type": "engineering_station",
+      "name": "採集設施"
+    },
+    {
+      "id": 73,
+      "x": 537,
+      "y": 87,
+      "type": "engineering_station",
+      "name": "武器設施"
+    },
+    {
+      "id": 74,
+      "x": 237,
+      "y": 768,
+      "type": "engineering_station",
+      "name": "防禦設施"
+    }
+  ],
+  "statistics": {
+    "total_buildings": 91,
+    "sun_city_count": 1,
+    "fortresses_count": 12,
+    "strongholds_count": 4,
+    "engineering_stations_count": 74
+  }
+}

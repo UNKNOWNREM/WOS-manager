@@ -12,6 +12,16 @@ A "Whiteout Survival" Alliance Member Management Tool built with React, Tailwind
     - Create custom tabs (e.g., Attack, Defense).
     - Dynamic columns (Attendance, Contribution).
     - **Drag & Drop** organization.
+- **Facility Control Tracking**: (NEW)
+    - Real-time countdown timers for engineering stations
+    - 3-day protection period with 24-hour contested period
+    - Automatic cycling between protection and contested states
+    - Manual time adjustment in dd:hh:mm:ss format
+    - Visual indicators on map and building lists
+- **Alliance Management**: (NEW)
+    - Configure alliance names, abbreviations, and colors
+    - Manage up to 5 alliances (A, B, C, D, E)
+    - Import/Export configuration as JSON
 - **Export**: Copy table data directly to Excel/Google Sheets.
 - **Privacy**: All data stored in `localStorage`.
 

@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, rmSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, cpSync, rmSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -8,6 +8,8 @@ const distDir = join(__dirname, '../dist');
 // Move HTML files from dist/src/pages/*/ to dist/
 const htmlFiles = [
   { from: 'src/pages/index/index.html', to: 'index.html' },
+  { from: 'src/pages/admin/admin.html', to: 'admin.html' },
+  { from: 'src/pages/map/map.html', to: 'map.html' },
   { from: 'src/pages/ranks/ranks.html', to: 'ranks.html' },
 ];
 
