@@ -18,6 +18,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    console.log('[DEBUG] SALT source:', process.env.VITE_API_SALT ? 'env var' : 'hardcoded fallback');
+    console.log('[DEBUG] SALT prefix:', SALT.substring(0, 6) + '...');
     const time = Date.now().toString();
     const signString = `fid=${fid}&time=${time}${SALT}`;
     const sign = crypto.createHash('md5').update(signString).digest('hex');
