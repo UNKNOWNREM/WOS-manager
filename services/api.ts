@@ -55,6 +55,8 @@ export const fetchPlayer = async (fid: string): Promise<Player> => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
+        'Origin': 'https://wos-giftcode.centurygame.com',
+        'Referer': 'https://wos-giftcode.centurygame.com/',
       },
       body: params,
     });
